@@ -202,79 +202,13 @@ export const getBaseFolderName = async (pid) => {
 	return responseJSON.data.name;
 };
 
-export default async function main(shareToken, pid, completeList) {
-	// console.log(completeList);
+export default async function main(baseDirectoryName, completeList) {
+	for (const pidObject of completeList) {
+		// console.log(`/-- ${season.name} --/`);
+		if (pidObject.sub) {
+		} else {
+		}
 
-	// const shareToken = "wIVJVO4";
-	// const pid = "2952179";
-	// console.log(shareToken, pid);
-	// console.log({ mainDirectoryName });
-	// addNote("mainDirectoryName", mainDirectoryName);
-
-	// const responseJSON = await getAllDownloadLinks(shareToken, pid);
-	// console.log(responseJSON);
-
-	// const contentList = extractResponseContentList(responseJSON);
-	// const parsedList = await recursiveCascadeToLeastFile(contentList);
-	// console.log(parsedList);
-	// console.log(parsedList[0]);
-
-	// // const parsedList = parseListPIDs(responseJSON.data.list);
-	// // const completeList = await cascadeToLeastVideo(parsedList);
-	// // console.log(completeList[0].sub);
-
-	// function extractResponseContentList(responseJSON) {
-	// 	return responseJSON.data.list;
-	// }
-
-	// async function recursiveCascadeToLeastFile(list) {
-	// 	const completeList = [];
-
-	// 	for (const pidObject of list) {
-	// 		if (pidObject.type === "dir") {
-	// 			const requestLink = generateSubFolderOrFileLink(
-	// 				shareToken,
-	// 				pidObject.pid
-	// 			);
-	// 			const responseJSON = await getData(requestLink);
-	// 			const contentList = extractResponseContentList(responseJSON);
-	// 			const parsedList = await recursiveCascadeToLeastFile(contentList);
-	// 			completeList.push({ ...pidObject, sub: parsedList });
-	// 			console.log(`${pidObject.name} urls are fetched.`);
-	// 			// const parsedList = parseListPIDs(responseJSON.data.list);
-	// 			continue;
-	// 		} else {
-	// 			completeList.push(pidObject);
-	// 		}
-
-	// 		return completeList;
-	// 	}
-	// }
-
-	// async function cascadeToLeastVideo(list) {
-	// 	const completeList = [];
-	// 	for (const pidObject of list) {
-	// 		if (pidObject.type != "dir") continue;
-	// 		const requestLink = generateSubFolderOrFileLink(
-	// 			shareToken,
-	// 			pidObject.pid
-	// 		);
-	// 		// console.log(requestLink);
-	// 		const responseJSON = await getData(requestLink);
-	// 		const parsedList = parseListPIDs(responseJSON.data.list);
-	// 		completeList.push({ ...pidObject, sub: parsedList });
-	// 		clearLastLine();
-	// 		console.log(`${pidObject.name} urls are fetched.`);
-	// 	}
-	// 	clearLastLine();
-	// 	console.log(`✅ All urls are fetched.`);
-	// 	return completeList;
-	// }
-
-	// console.log(completeList[0]);
-
-	for (const season of completeList) {
-		console.log(`/-- ${season.name} --/`);
 		for (const episode of season.sub) {
 			const fileName =
 				"S" +
