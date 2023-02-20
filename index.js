@@ -1,146 +1,42 @@
-import * as fs from "fs";
-import Downloader from "nodejs-file-downloader";
-import path from "path";
+// import download from "./downloader.js";
+import download, {
+	parseLink,
+	getAllDownloadLinks,
+	saveFetchedUrls,
+	getBaseFolderName,
+} from "./downloader.js";
+import { intro, outro, text, spinner, note } from "@clack/prompts";
+import { addCancelPrompt } from "./utils.js";
 
-const generateMainDirectoryLink = (folderId) =>
-	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=0`;
+intro(`Welcome to LinkBox Downloader`);
 
-const generateSubFolderOrFileLink = (folderId, pid) =>
-	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=${pid}`;
+const shareLink = await text({
+	message: "What is the link to be downloaded?",
+	placeholder: "https://www.linkbox.to/a/s/<share-token>?pid=<folder-pid>",
+	validate: (text) => {
+		const linkboxRegex =
+			/^https?:\/\/(?:www\.)?linkbox\.to\/[a-z]\/[a-z]\/[a-zA-Z0-9]+(\?pid=[0-9]+)?$/;
+		if (!linkboxRegex.test(text))
+			return `Text doesn't seem to represent a linkbox link.`;
+	},
+});
 
-const getData = async function (url) {
-	const req = await fetch(url);
-	const data = await req.json();
-	return data;
-};
+addCancelPrompt(shareLink, "Operation canceled.");
 
-const parseListPIDs = (list) => {
-	const foldersList = list;
-	foldersList.sort((a, b) => {
-		if (a.name_sort > b.name_sort) return 1;
-		else if (a.name_sort < b.name_sort) return -1;
-		else return 0;
-	});
+const { shareToken, pid } = parseLink(shareLink);
 
-	return foldersList.map((item) => {
-		const element = {};
-		// element.name = item.name.trim();
-		element.type = item.type;
-		element.pid = item.id;
-		// if (item.type == "dir") {
-		// 	// element.name =
-		// } else
-		const numericName = item.name.replace(/الحلقة|الموسم/, "");
-		// const numericName = item.name.replace("الحلقة", "");
-		if (item.type == "video") {
-			element.name = "E" + parseInt(numericName);
-			element.url = item.url;
-		} else if (item.type == "dir") {
-			element.name = "Season " + parseInt(numericName);
-		}
+const linksSpinner = spinner();
+linksSpinner.start("Fetching Links");
+let mainDirectoryName = pid && (await getBaseFolderName(pid));
+// console.log(mainDirectoryName);
+const parsedList = await getAllDownloadLinks(shareToken, pid);
+linksSpinner.stop("Finished Downloading Links");
 
-		return element;
-	});
-};
+saveFetchedUrls(mainDirectoryName, shareLink, parsedList);
 
-// const createDirectory = (dirName) => {
-// 	if (!fs.existsSync(dirName)) {
-// 		fs.mkdirSync(dirName);
-// 	}
-// };
+// const filesDownloadingSpinner = spinner();
+// filesDownloadingSpinner.start("Downloading Files");
+// await download(shareToken, pid);
+// filesDownloadingSpinner.stop("Finished Downloading Files");
 
-const clearLastLine = () => {
-	process.stdout.moveCursor(0, -1); // up one line
-	process.stdout.clearLine(1); // from cursor to end
-};
-
-const isEpisodeDownloaded = (...args) => {
-	const filePath = path.join("downloads", ...args);
-	// console.log(filePath);
-	return !!fs.existsSync(filePath);
-};
-
-const downloadEpisode = async (
-	url,
-	dirName = "general",
-	fileName = "undefined"
-) => {
-	console.log(`⏳ ${fileName} of ${dirName} is started.`);
-	console.log(``);
-	const downloader = new Downloader({
-		url,
-		maxAttempts: 3,
-		directory: "./downloads/" + dirName.trim(),
-		onBeforeSave: (deducedName) => {
-			const ext = deducedName.split(".")[1];
-			return (
-				"S" + parseInt(dirName.replace("Season", "")) + fileName + "." + ext
-			);
-		},
-		onProgress: function (percentage, chunk, remainingSize) {
-			clearLastLine();
-			console.log(
-				`  %${percentage} / Remaining: ${(
-					remainingSize /
-					(1024 * 1024)
-				).toFixed(2)}MB`
-			);
-			// console.log("  Remaining bytes: ", remainingSize);
-		},
-	});
-	try {
-		const { filePath, downloadStatus } = await downloader.download();
-		clearLastLine();
-		clearLastLine();
-		console.log(`✅ ${fileName} of ${dirName} is downloaded.`);
-	} catch (error) {
-		console.log("Download failed.", error);
-	}
-};
-
-(async function main() {
-	const dirId = "wIVJVO4";
-	const folderPID = "2952179";
-	const requestLink = generateSubFolderOrFileLink(dirId, folderPID);
-	const responseJSON = await getData(requestLink);
-	const parsedList = parseListPIDs(responseJSON.data.list);
-	const completeList = await cascadeToLeastVideo(parsedList);
-	// console.log(completeList[0].sub);
-
-	async function cascadeToLeastVideo(list) {
-		const completeList = [];
-		for (const pidObject of list) {
-			if (pidObject.type != "dir") continue;
-			const requestLink = generateSubFolderOrFileLink(dirId, pidObject.pid);
-			// console.log(requestLink);
-			const responseJSON = await getData(requestLink);
-			const parsedList = parseListPIDs(responseJSON.data.list);
-			completeList.push({ ...pidObject, sub: parsedList });
-			clearLastLine();
-			console.log(`${pidObject.name} urls are fetched.`);
-		}
-		clearLastLine();
-		console.log(`✅ All urls are fetched.`);
-		return completeList;
-	}
-
-	// console.log(completeList[0]);
-
-	for (const season of completeList) {
-		console.log(`/-- Starting ${season.name} --/`);
-		for (const episode of season.sub) {
-			const fileName =
-				"S" +
-				parseInt(season.name.replace("Season", "")) +
-				episode.name +
-				".mp4";
-			if (!isEpisodeDownloaded(season.name, fileName)) {
-				await downloadEpisode(episode.url, season.name, episode.name);
-			} else {
-				console.log(
-					`✅ ${episode.name} of ${season.name} was downloaded in a previous session.`
-				);
-			}
-		}
-	}
-})();
+outro(`You're all set!`);
