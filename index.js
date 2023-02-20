@@ -26,17 +26,21 @@ addCancelPrompt(shareLink, "Operation canceled.");
 const { shareToken, pid } = parseLink(shareLink);
 
 const linksSpinner = spinner();
-linksSpinner.start("Fetching Links");
+linksSpinner.start("⏳ Fetching directory links");
 let mainDirectoryName = pid && (await getBaseFolderName(pid));
 // console.log(mainDirectoryName);
 const parsedList = await getAllDownloadLinks(shareToken, pid);
-linksSpinner.stop("Finished Downloading Links");
+linksSpinner.stop("✅ All directory links are fetched");
+console.log(parsedList);
 
+const savingLinksSpinner = spinner();
+savingLinksSpinner.start("⏳ Saving links to a log file");
 saveFetchedUrls(mainDirectoryName, shareLink, parsedList);
+savingLinksSpinner.stop("✅ Links are saved to a log file");
 
 // const filesDownloadingSpinner = spinner();
 // filesDownloadingSpinner.start("Downloading Files");
-// await download(shareToken, pid);
+// await download(shareToken, pid, parsedList);
 // filesDownloadingSpinner.stop("Finished Downloading Files");
 
 outro(`You're all set!`);
