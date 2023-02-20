@@ -1,3 +1,7 @@
+# node project defaults
 node_modules
-downloads
 package-lock.json
+
+# app created log and download files
+downloads
+linkbox_log*.json
