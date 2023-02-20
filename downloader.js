@@ -52,14 +52,20 @@ const clearLastLine = () => {
 	process.stdout.clearLine(1); // from cursor to end
 };
 
-const isEpisodeDownloaded = (...args) => {
-	const filePath = path.join("downloads", ...args);
+const generateFilePath = (args) => {
+	// handle path commom issues
+	return path.join(...args); //.replaceAll(" ", "_");
+};
+
+const isEpisodeDownloaded = (filePath) => {
+	// const filePath = path.join(...args);
 	// console.log(filePath);
 	return !!fs.existsSync(filePath);
 };
 
 const downloadEpisode = async (
 	url,
+	filePath,
 	dirName = "general",
 	fileName = "undefined"
 ) => {
@@ -68,13 +74,13 @@ const downloadEpisode = async (
 	const downloader = new Downloader({
 		url,
 		maxAttempts: 3,
-		directory: "./downloads/" + dirName.trim(),
-		onBeforeSave: (deducedName) => {
-			const ext = deducedName.split(".")[1];
-			return (
-				"S" + parseInt(dirName.replace("Season", "")) + fileName + "." + ext
-			);
-		},
+		directory: filePath,
+		// onBeforeSave: (deducedName) => {
+		// 	const ext = deducedName.split(".")[1];
+		// 	return (
+		// 		"S" + parseInt(dirName.replace("Season", "")) + fileName + "." + ext
+		// 	);
+		// },
 		onProgress: function (percentage, chunk, remainingSize) {
 			clearLastLine();
 			console.log(
@@ -202,27 +208,47 @@ export const getBaseFolderName = async (pid) => {
 	return responseJSON.data.name;
 };
 
-export default async function main(baseDirectoryName, completeList) {
+export default async function downloadDirectory(
+	initialPathDirectory,
+	baseDirectoryName,
+	completeList
+) {
 	for (const pidObject of completeList) {
-		// console.log(`/-- ${season.name} --/`);
+		const path = generateFilePath([...initialPathDirectory, baseDirectoryName]);
+		console.log(path);
 		if (pidObject.sub) {
+			// pidObject is a folder
+			downloadDirectory(path, pidObject.name, pidObject.sub);
 		} else {
-		}
-
-		for (const episode of season.sub) {
-			const fileName =
-				"S" +
-				parseInt(season.name.replace("Season", "")) +
-				episode.name +
-				".mp4";
-			if (!isEpisodeDownloaded(season.name, fileName)) {
-				await downloadEpisode(episode.url, season.name, episode.name);
+			// pidObject is a file
+			if (!isEpisodeDownloaded(path)) {
+				await downloadEpisode(
+					pidObject.url,
+					path,
+					baseDirectoryName,
+					pidObject.name
+				);
 			} else {
 				console.log(
-					`✅ ${episode.name} of ${season.name} was downloaded in a previous session.`
+					`✅ ${pidObject.name} of ${baseDirectoryName} was downloaded in a previous session.`
 				);
 			}
 		}
+
+		// for (const episode of season.sub) {
+		// 	const fileName =
+		// 		"S" +
+		// 		parseInt(season.name.replace("Season", "")) +
+		// 		episode.name +
+		// 		".mp4";
+		// 	if (!isEpisodeDownloaded(season.name, fileName)) {
+		// 		await downloadEpisode(episode.url, season.name, episode.name);
+		// 	} else {
+		// 		console.log(
+		// 			`✅ ${episode.name} of ${season.name} was downloaded in a previous session.`
+		// 		);
+		// 	}
+		// }
 	}
 
 	console.log(`/-- Downloaded All Folders --/`);
