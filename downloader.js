@@ -1,9 +1,7 @@
 import * as fs from "fs";
-// import { url } from "inspector";
 import Downloader from "nodejs-file-downloader";
 import path from "path";
 import { URL } from "url";
-import { addNote } from "./utils.js";
 
 // const generateMainDirectoryLink = (folderId) =>
 // 	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=0`;
@@ -19,10 +17,6 @@ const getData = async function (url) {
 	const data = await req.json();
 	return data;
 };
-
-// const fetchAllFilesAndFolders = async (responseJson){
-
-// }
 
 const parseListPIDs = (list) => {
 	const foldersList = list;
@@ -174,7 +168,9 @@ export const getAllDownloadLinks = async (shareToken, pid) => {
 	return parsedList;
 };
 
-export const saveFetchedUrls = (baseFolderName, url, parsedList) => {
+export const saveFetchedUrls = async (baseFolderName, url, parsedList) => {
+	// console.log(parsedList);
+
 	const now = new Date();
 	// const now = new Date().toString();
 	const metadata = {
@@ -183,16 +179,17 @@ export const saveFetchedUrls = (baseFolderName, url, parsedList) => {
 		directory_url: url,
 		files: parsedList,
 	};
+	// console.log(metadata);
 
 	try {
-		console.log(now);
+		// console.log(now);
 		fs.writeFile(
-			`${now.toISOString()}.json`.replace(/:/g, "_"),
+			`linkbox_log.${now.toISOString()}.json`.replace(/:/g, "_"),
 			JSON.stringify(metadata),
 			"utf8",
 			() => {}
 		);
-		console.log("saveFetchedUrls");
+		// console.log("saveFetchedUrls");
 	} catch (error) {
 		console.error(`Couldn't save file.`, error);
 	}
@@ -205,10 +202,12 @@ export const getBaseFolderName = async (pid) => {
 	return responseJSON.data.name;
 };
 
-export default async function main(shareToken, pid) {
+export default async function main(shareToken, pid, completeList) {
+	// console.log(completeList);
+
 	// const shareToken = "wIVJVO4";
 	// const pid = "2952179";
-	console.log(shareToken, pid);
+	// console.log(shareToken, pid);
 	// console.log({ mainDirectoryName });
 	// addNote("mainDirectoryName", mainDirectoryName);
 
@@ -252,25 +251,25 @@ export default async function main(shareToken, pid) {
 	// 	}
 	// }
 
-	async function cascadeToLeastVideo(list) {
-		const completeList = [];
-		for (const pidObject of list) {
-			if (pidObject.type != "dir") continue;
-			const requestLink = generateSubFolderOrFileLink(
-				shareToken,
-				pidObject.pid
-			);
-			// console.log(requestLink);
-			const responseJSON = await getData(requestLink);
-			const parsedList = parseListPIDs(responseJSON.data.list);
-			completeList.push({ ...pidObject, sub: parsedList });
-			clearLastLine();
-			console.log(`${pidObject.name} urls are fetched.`);
-		}
-		clearLastLine();
-		console.log(`✅ All urls are fetched.`);
-		return completeList;
-	}
+	// async function cascadeToLeastVideo(list) {
+	// 	const completeList = [];
+	// 	for (const pidObject of list) {
+	// 		if (pidObject.type != "dir") continue;
+	// 		const requestLink = generateSubFolderOrFileLink(
+	// 			shareToken,
+	// 			pidObject.pid
+	// 		);
+	// 		// console.log(requestLink);
+	// 		const responseJSON = await getData(requestLink);
+	// 		const parsedList = parseListPIDs(responseJSON.data.list);
+	// 		completeList.push({ ...pidObject, sub: parsedList });
+	// 		clearLastLine();
+	// 		console.log(`${pidObject.name} urls are fetched.`);
+	// 	}
+	// 	clearLastLine();
+	// 	console.log(`✅ All urls are fetched.`);
+	// 	return completeList;
+	// }
 
 	// console.log(completeList[0]);
 
