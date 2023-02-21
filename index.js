@@ -40,7 +40,8 @@ savingLinksSpinner.stop("✅ Links are saved to a log file");
 
 // const filesDownloadingSpinner = spinner();
 // filesDownloadingSpinner.start("Downloading Files");
-await download(["downloads"], baseDirectoryName, parsedList);
+await download(["downloads"], parsedList, baseDirectoryName);
+
 // filesDownloadingSpinner.stop("Finished Downloading Files");
 
 outro(`You're all set!`);

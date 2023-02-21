@@ -13,9 +13,13 @@ const generateFolderBaseInfoLink = (pid) =>
 	`https://www.linkbox.to/api/file/folder_base_info?dirId=${pid}&lan=en`;
 
 const getData = async function (url) {
-	const req = await fetch(url);
-	const data = await req.json();
-	return data;
+	try {
+		const req = await fetch(url);
+		const data = await req.json();
+		return data;
+	} catch (error) {
+		throw new Error(error);
+	}
 };
 
 const parseListPIDs = (list) => {
@@ -63,9 +67,9 @@ const isEpisodeDownloaded = (filePath) => {
 	return !!fs.existsSync(filePath);
 };
 
-const downloadEpisode = async (
+const downloadFile = async (
 	url,
-	filePath,
+	dirPath,
 	dirName = "general",
 	fileName = "undefined"
 ) => {
@@ -74,12 +78,12 @@ const downloadEpisode = async (
 	const downloader = new Downloader({
 		url,
 		maxAttempts: 3,
-		directory: filePath,
+		directory: dirPath,
+		fileName: fileName,
 		// onBeforeSave: (deducedName) => {
-		// 	const ext = deducedName.split(".")[1];
-		// 	return (
-		// 		"S" + parseInt(dirName.replace("Season", "")) + fileName + "." + ext
-		// 	);
+		// 	// add file extension to it if no extension put at the end
+		// 	const ext = deducedName.split(".").pop();
+		// 	return ext == fileExtension ? fileName : fileName + "." + fileExtension;
 		// },
 		onProgress: function (percentage, chunk, remainingSize) {
 			clearLastLine();
@@ -132,7 +136,8 @@ export const getAllDownloadLinks = async (shareToken, pid) => {
 	// console.log(completeList[0].sub);
 
 	function extractResponseContentList(responseJSON) {
-		return responseJSON.data.list;
+		if (responseJSON.data) return responseJSON.data.list;
+		throw new Error("Make sure that link is right!");
 	}
 
 	async function recursiveCascadeToLeastFile(list) {
@@ -210,24 +215,34 @@ export const getBaseFolderName = async (pid) => {
 
 export default async function downloadDirectory(
 	initialPathDirectory,
-	baseDirectoryName,
-	completeList
+	completeList,
+	baseDirectoryName
 ) {
+	// console.log({ initialPathDirectory, baseDirectoryName });
 	for (const pidObject of completeList) {
-		const path = generateFilePath([...initialPathDirectory, baseDirectoryName]);
-		console.log(path);
+		// console.log(path);
+		const dirPath = generateFilePath([
+			...initialPathDirectory,
+			baseDirectoryName,
+		]);
 		if (pidObject.sub) {
 			// pidObject is a folder
-			downloadDirectory(path, pidObject.name, pidObject.sub);
+			await downloadDirectory([dirPath], pidObject.sub, pidObject.name);
 		} else {
+			const fileName = (function () {
+				const ext = pidObject.name.split(".").pop();
+				return ext == pidObject.extension
+					? pidObject.name
+					: pidObject.name + "." + pidObject.extension;
+			})();
+			const filePath = generateFilePath([
+				...initialPathDirectory,
+				baseDirectoryName,
+				fileName,
+			]);
 			// pidObject is a file
-			if (!isEpisodeDownloaded(path)) {
-				await downloadEpisode(
-					pidObject.url,
-					path,
-					baseDirectoryName,
-					pidObject.name
-				);
+			if (!isEpisodeDownloaded(filePath)) {
+				await downloadFile(pidObject.url, dirPath, baseDirectoryName, fileName);
 			} else {
 				console.log(
 					`✅ ${pidObject.name} of ${baseDirectoryName} was downloaded in a previous session.`
