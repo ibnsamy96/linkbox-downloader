@@ -21,6 +21,13 @@ const spinners = [];
 try {
 	intro(`Welcome to LinkBox Downloader`);
 
+	if (Number(process.versions.node.split(".").shift()) < "18") {
+		const error = new Error("Node version is below 18.");
+		error.cancelationMessage =
+			"The app is only available for node >= 18 due to using some of the latest features presented in this version.";
+		throw error;
+	}
+
 	const shareLink = await text({
 		message: "What is the link to be downloaded?",
 		placeholder: "https://www.linkbox.to/a/s/<share-token>?pid=<folder-pid>",
@@ -70,17 +77,19 @@ try {
 		spObject.sp.stop(spObject.errorMessage);
 	});
 
+	cancel(error.cancelationMessage);
+
+	if (process.argv[2] !== "dev") process.exit(0);
+
+	intro(`Error Tracer`);
 	const isErrorNeedsToBeTraced = await select({
 		message:
 			"An error happened, do you want to trace it for debugging purposes or just to know it?",
 		options: [
 			{ value: true, label: "Yes, trace it." },
-			{ value: false, label: "No, just give me the cancelation message." },
+			{ value: false, label: "No, the cancelation message was enough." },
 		],
 	});
-
 	if (isErrorNeedsToBeTraced) throw error;
-
-	cancel(error.cancelationMessage);
-	process.exit(0);
+	outro(`You're all set!`);
 }
