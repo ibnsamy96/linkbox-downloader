@@ -18,7 +18,9 @@ const getData = async function (url) {
 		const data = await req.json();
 		return data;
 	} catch (error) {
-		throw new Error(error);
+		error.cancelationMessage =
+			"Couldn't complete the fetch process, make sure that you're connected and LinkBox is available.";
+		throw error;
 	}
 };
 
@@ -103,7 +105,9 @@ const downloadFile = async (
 		clearLastLine();
 		console.log(`   ✅ ${fileName} of ${dirName} is downloaded.`);
 	} catch (error) {
-		console.log("   Download failed.", error);
+		error.cancelationMessage =
+			"Couldn't download files, make sure that you're connected and LinkBox is available.";
+		throw error;
 	}
 };
 
@@ -197,14 +201,15 @@ export const saveFetchedUrls = async (baseFolderName, url, parsedList) => {
 	try {
 		// console.log(now);
 		fs.writeFile(
-			`linkbox_log.${now.toISOString()}.json`.replace(/:/g, "_"),
+			`linkbox_logs/linkbox_log.${now.toISOString()}.json`.replace(/:/g, "_"),
 			JSON.stringify(metadata),
 			"utf8",
 			() => {}
 		);
 		// console.log("saveFetchedUrls");
 	} catch (error) {
-		console.error(`   Couldn't save file.`, error);
+		error.cancelationMessage = `Couldn't save to a log file, make sure that you can access this directory './linkbox_logs'.`;
+		throw error;
 	}
 };
 

@@ -4,4 +4,4 @@ package-lock.json
 
 # app created log and download files
 downloads
-linkbox_log*.json
+linkbox_logs
