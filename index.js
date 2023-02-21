@@ -68,10 +68,10 @@ try {
 	// filesDownloadingSpinner.start("Downloading Files");
 	await download(["downloads"], parsedList, baseDirectoryName);
 
-	console.log(`/-- Downloaded All Folders --/`);
+	// console.log(`/-- Downloaded All Folders --/`);
+	outro(`Downloaded all folders and files, come visit soon ^^`);
 
 	// filesDownloadingSpinner.stop("Finished Downloading Files");
-	outro(`You're all set!`);
 } catch (error) {
 	spinners.forEach((spObject) => {
 		spObject.sp.stop(spObject.errorMessage);
@@ -79,9 +79,13 @@ try {
 
 	cancel(error.cancelationMessage);
 
-	if (process.argv[2] !== "dev") process.exit(0);
+	if (process.argv[2] !== "dev") {
+		outro(`I wish that the issue is solved soon!`);
+		process.exit(0);
+	}
 
 	intro(`Error Tracer`);
+
 	const isErrorNeedsToBeTraced = await select({
 		message:
 			"An error happened, do you want to trace it for debugging purposes or just to know it?",
@@ -90,6 +94,8 @@ try {
 			{ value: false, label: "No, the cancelation message was enough." },
 		],
 	});
+	addCancelPrompt(isErrorNeedsToBeTraced, "Operation canceled.");
+
 	if (isErrorNeedsToBeTraced) throw error;
-	outro(`You're all set!`);
+	outro(`I wish you luck solving the issue ^^`);
 }
