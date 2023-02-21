@@ -31,7 +31,7 @@ let baseDirectoryName = pid && (await getBaseFolderName(pid));
 // console.log(mainDirectoryName);
 const parsedList = await getAllDownloadLinks(shareToken, pid);
 linksSpinner.stop("✅ All directory links are fetched");
-console.log(parsedList);
+// console.log(parsedList);
 
 const savingLinksSpinner = spinner();
 savingLinksSpinner.start("⏳ Saving links to a log file");
@@ -41,6 +41,8 @@ savingLinksSpinner.stop("✅ Links are saved to a log file");
 // const filesDownloadingSpinner = spinner();
 // filesDownloadingSpinner.start("Downloading Files");
 await download(["downloads"], parsedList, baseDirectoryName);
+
+console.log(`/-- Downloaded All Folders --/`);
 
 // filesDownloadingSpinner.stop("Finished Downloading Files");
 

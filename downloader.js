@@ -73,7 +73,8 @@ const downloadFile = async (
 	dirName = "general",
 	fileName = "undefined"
 ) => {
-	console.log(`⏳ ${fileName} of ${dirName} is started.`);
+	console.log(`   ⏳ Downloading ${fileName} of ${dirName}.`);
+	// console.log({ dirPath, fileName });
 	console.log(``);
 	const downloader = new Downloader({
 		url,
@@ -88,7 +89,7 @@ const downloadFile = async (
 		onProgress: function (percentage, chunk, remainingSize) {
 			clearLastLine();
 			console.log(
-				`  %${percentage} / Remaining: ${(
+				`      %${percentage} / Remaining: ${(
 					remainingSize /
 					(1024 * 1024)
 				).toFixed(2)}MB`
@@ -100,9 +101,9 @@ const downloadFile = async (
 		const { filePath, downloadStatus } = await downloader.download();
 		clearLastLine();
 		clearLastLine();
-		console.log(`✅ ${fileName} of ${dirName} is downloaded.`);
+		console.log(`   ✅ ${fileName} of ${dirName} is downloaded.`);
 	} catch (error) {
-		console.log("Download failed.", error);
+		console.log("   Download failed.", error);
 	}
 };
 
@@ -169,6 +170,7 @@ export const getAllDownloadLinks = async (shareToken, pid) => {
 				completeList.push({ ...neededPidObject, sub: parsedList });
 			} else {
 				neededPidObject.url = pidObject.url;
+				neededPidObject.extension = pidObject.sub_type || "";
 				neededPidObject.item_id = pidObject.item_id;
 				completeList.push(neededPidObject);
 			}
@@ -202,7 +204,7 @@ export const saveFetchedUrls = async (baseFolderName, url, parsedList) => {
 		);
 		// console.log("saveFetchedUrls");
 	} catch (error) {
-		console.error(`Couldn't save file.`, error);
+		console.error(`   Couldn't save file.`, error);
 	}
 };
 
@@ -245,7 +247,7 @@ export default async function downloadDirectory(
 				await downloadFile(pidObject.url, dirPath, baseDirectoryName, fileName);
 			} else {
 				console.log(
-					`✅ ${pidObject.name} of ${baseDirectoryName} was downloaded in a previous session.`
+					`   ✅ ${fileName} of ${baseDirectoryName} was downloaded in a previous session.`
 				);
 			}
 		}
@@ -257,7 +259,7 @@ export default async function downloadDirectory(
 		// 		episode.name +
 		// 		".mp4";
 		// 	if (!isEpisodeDownloaded(season.name, fileName)) {
-		// 		await downloadEpisode(episode.url, season.name, episode.name);
+		// 		await downloadFile(episode.url, season.name, episode.name);
 		// 	} else {
 		// 		console.log(
 		// 			`✅ ${episode.name} of ${season.name} was downloaded in a previous session.`
@@ -265,6 +267,4 @@ export default async function downloadDirectory(
 		// 	}
 		// }
 	}
-
-	console.log(`/-- Downloaded All Folders --/`);
 }
