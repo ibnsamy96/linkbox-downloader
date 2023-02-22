@@ -21,7 +21,7 @@ const spinners = [];
 try {
 	intro(`Welcome to LinkBox Downloader`);
 
-	if (Number(process.versions.node.split(".").shift()) < "18") {
+	if (Number(process.versions.node.split(".").shift()) < 18) {
 		const error = new Error("Node version is below 18.");
 		error.cancelationMessage =
 			"The app is only available for node >= 18 due to using some of the latest features presented in this version.";
