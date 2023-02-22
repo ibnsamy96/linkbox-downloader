@@ -65,13 +65,16 @@ try {
 	savingLinksSpinner.stop("✅ Links are saved to a log file");
 
 	// const filesDownloadingSpinner = spinner();
+	// spinners.push({
+	// 	sp: filesDownloadingSpinner,
+	// 	errorMessage: "❎ At least one file couldn't be downloaded.",
+	// });
 	// filesDownloadingSpinner.start("Downloading Files");
 	await download(["downloads"], parsedList, baseDirectoryName);
+	// filesDownloadingSpinner.stop("Finished Downloading Files");
 
 	// console.log(`/-- Downloaded All Folders --/`);
 	outro(`Downloaded all folders and files, come visit soon ^^`);
-
-	// filesDownloadingSpinner.stop("Finished Downloading Files");
 } catch (error) {
 	spinners.forEach((spObject) => {
 		spObject.sp.stop(spObject.errorMessage);
