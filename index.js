@@ -64,14 +64,14 @@ try {
 	saveFetchedUrls(baseDirectoryName, shareLink, parsedList);
 	savingLinksSpinner.stop("✅ Links are saved to a log file");
 
-	// const filesDownloadingSpinner = spinner();
+	const filesDownloadingSpinner = spinner();
 	// spinners.push({
 	// 	sp: filesDownloadingSpinner,
 	// 	errorMessage: "❎ At least one file couldn't be downloaded.",
 	// });
-	// filesDownloadingSpinner.start("Downloading Files");
+	filesDownloadingSpinner.start("");
+	filesDownloadingSpinner.stop("Started downloading files...");
 	await download(["downloads"], parsedList, baseDirectoryName);
-	// filesDownloadingSpinner.stop("Finished Downloading Files");
 
 	// console.log(`/-- Downloaded All Folders --/`);
 	outro(`Downloaded all folders and files, come visit soon ^^`);
