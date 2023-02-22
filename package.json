@@ -7,7 +7,8 @@
 	"scripts": {
 		"start": "node index.js",
 		"start:dev": "node index.js dev",
-		"test": ""
+		"test": "",
+		"build": ""
 	},
 	"author": "",
 	"license": "ISC",
