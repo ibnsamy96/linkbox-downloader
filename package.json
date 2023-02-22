@@ -1,6 +1,6 @@
 {
 	"name": "@ibnsamy96/linkbox-directory-downloader",
-	"version": "0.0.0-development",
+	"version": "1.1.0",
 	"description": "",
 	"main": "index.js",
 	"type": "module",
