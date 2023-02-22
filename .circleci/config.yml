@@ -1,0 +1,35 @@
+version: 2
+jobs:
+  publish-npm-job:
+    working_directory: ~/<WORKING DIR>/build
+    parallelism: 1
+    shell: /bin/bash --login
+    docker:
+      - image: circleci/node:10.0.0
+    # the checkout step will checkout project source code into the job’s working_directory.
+    # You can obtain GITHUB DEPLOY KEY through https://circleci.com/docs/2.0/gh-bb-integration/#creating-a-github-deploy-key.
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "<GITHUB DEPLOY KEY>"
+      - checkout
+      - run: npm install
+      - run:
+          command: |
+            git config user.email "mahmoudsamy50@outlook.com"
+            git config user.name "ibnsamy96"
+      # As we need to publish new npm version of our library/code, we have to bump npm version on previous one & Publish it to npm registry, here we will publish minor version over previous version.
+      - run: npm version --minor
+      - run: npm publish
+      # As we will push the `updated npm version & tags` back to git, we need to make sure that it won't trigger circleCI job again so we will update commit message with [ci skip].
+      - run: git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
+      # Push the updated npm version to git branch, in our case it is master.
+      - run: git push origin $CIRCLE_BRANCH --tags
+workflows:
+  version: 2
+  build-and-publish:
+    jobs:
+      - publish-npm-job:
+          filters:
+            branches:
+              only: main
