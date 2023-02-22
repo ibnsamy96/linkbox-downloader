@@ -7,8 +7,7 @@
 	"scripts": {
 		"start": "node index.js",
 		"start:dev": "node index.js dev",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"semantic-release": "semantic-release"
+		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "",
 	"license": "ISC",
@@ -16,15 +15,12 @@
 		"@clack/prompts": "^0.4.3",
 		"nodejs-file-downloader": "^4.10.6"
 	},
-	"devDependencies": {
-		"semantic-release": "^20.1.0"
-	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ibnsamy96/LinkBox-Folder-Downloader.git"
 	},
 	"publishConfig": {
-		"access": "restricted"
+		"access": "public"
 	},
 	"release": {
 		"branches": [
