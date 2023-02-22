@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "node index.js",
 		"start:dev": "node index.js dev",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": ""
 	},
 	"author": "",
 	"license": "ISC",
