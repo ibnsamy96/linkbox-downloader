@@ -1,3 +1,4 @@
+// import { error } from "console";
 import * as fs from "fs";
 import Downloader from "nodejs-file-downloader";
 import path from "path";
@@ -199,13 +200,16 @@ export const saveFetchedUrls = async (baseFolderName, url, parsedList) => {
 	// console.log(metadata);
 
 	try {
+		const logDirectory = "./linkbox_logs";
+		if (!fs.existsSync(logDirectory)) {
+			fs.mkdirSync(logDirectory);
+		}
 		// console.log(now);
-		fs.writeFile(
-			`linkbox_logs/linkbox_log.${now.toISOString()}.json`.replace(/:/g, "_"),
-			JSON.stringify(metadata),
-			"utf8",
-			() => {}
+		const filePath = path.join(
+			logDirectory,
+			`linkbox_log.${now.toISOString()}.json`.replace(/:/g, "_")
 		);
+		fs.writeFile(filePath, JSON.stringify(metadata), "utf8", () => {});
 		// console.log("saveFetchedUrls");
 	} catch (error) {
 		error.cancelationMessage = `Couldn't save to a log file, make sure that you can access this directory './linkbox_logs'.`;
