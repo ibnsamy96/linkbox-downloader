@@ -18,7 +18,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ibnsamy96/LinkBox-Folder-Downloader.git"
+		"url": "https://github.com/ibnsamy96/linkbox-folder-downloader.git"
 	},
 	"publishConfig": {
 		"access": "public"
