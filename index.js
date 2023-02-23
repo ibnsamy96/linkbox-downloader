@@ -5,15 +5,7 @@ import download, {
 	saveFetchedUrls,
 	getBaseFolderName,
 } from "./downloader.js";
-import {
-	intro,
-	outro,
-	text,
-	spinner,
-	note,
-	cancel,
-	select,
-} from "@clack/prompts";
+import { intro, outro, text, spinner, cancel, select } from "@clack/prompts";
 import { addCancelPrompt } from "./utils.js";
 
 const spinners = [];
