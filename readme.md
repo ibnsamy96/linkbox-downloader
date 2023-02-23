@@ -1,4 +1,4 @@
-# LinkBox Downloader
+# LinkBox Directories Downloader
 
-Simple app to download folders from LinkBox  
+Simple cli-utility to download director from LinkBox  
 ![linkbox downloader screenshot](./screenshot.png)
