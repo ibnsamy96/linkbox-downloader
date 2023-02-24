@@ -7,6 +7,8 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run: sudo apt-get update && sudo apt-get install -y nodejs
+      - run: sudo npm install -g npm
       - run: npm install
       - run:
           name: Run Semantic Release
