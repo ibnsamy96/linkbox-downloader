@@ -1,13 +1,29 @@
-version: 2
+version: 2.1
+
 jobs:
-  build:
+  release:
     docker:
-      - image: "circleci/node:17.2.0"
+      - image: circleci/node:latest
+    working_directory: ~/repo
     steps:
       - checkout
+      - run: npm install
       - run:
-          name: install
-          command: npm install
-      - run:
-          name: release
-          command: npm run semantic-release || true
+          name: Run Semantic Release
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              npx semantic-release
+            else
+              echo "Skipping semantic-release for branch ${CIRCLE_BRANCH}"
+            fi
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - release:
+          name: Semantic Release
+          filters:
+            branches:
+              only:
+                - main
