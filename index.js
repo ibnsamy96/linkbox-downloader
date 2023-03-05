@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // import download from "./downloader.js";
 import download, {
 	parseLink,
@@ -23,12 +25,12 @@ try {
 	const shareLink = await text({
 		message: "What is the link to be downloaded?",
 		placeholder: "https://www.linkbox.to/a/s/<share-token>?pid=<folder-pid>",
-		// validate: (text) => {
-		// 	const linkboxRegex =
-		// 		/^https?:\/\/(?:www\.)?linkbox\.to\/[a-z]\/[a-z]\/[a-zA-Z0-9]+(\?pid=[0-9]+)?$/;
-		// 	if (!linkboxRegex.test(text))
-		// 		return `Text doesn't seem to represent a linkbox link.`;
-		// },
+		validate: (text) => {
+			const linkboxRegex =
+				/^https?:\/\/(?:www\.)?linkbox\.to\/[a-z]\/[a-z]\/[a-zA-Z0-9]+(\?pid=[0-9]+)?$/;
+			if (!linkboxRegex.test(text))
+				return `Text doesn't seem to represent a linkbox link.`;
+		},
 	});
 
 	addCancelPrompt(shareLink, "Operation canceled.");
@@ -41,10 +43,12 @@ try {
 		errorMessage: "❎ Directory links couldn't be fetched",
 	});
 	linksSpinner.start("⏳ Fetching directory links");
+	linksSpinner.isOn = true;
 	let baseDirectoryName = pid && (await getBaseFolderName(pid));
 	// console.log(mainDirectoryName);
 	const parsedList = await getAllDownloadLinks(shareToken, pid);
 	linksSpinner.stop("✅ All directory links are fetched");
+	linksSpinner.isOn = false;
 	// console.log(parsedList);
 
 	const savingLinksSpinner = spinner();
@@ -53,8 +57,10 @@ try {
 		errorMessage: "❎ Links couldn't saved to a log file",
 	});
 	savingLinksSpinner.start("⏳ Saving links to a log file");
+	savingLinksSpinner.isOn = true;
 	saveFetchedUrls(baseDirectoryName, shareLink, parsedList);
 	savingLinksSpinner.stop("✅ Links are saved to a log file");
+	savingLinksSpinner.isOn = false;
 
 	const filesDownloadingSpinner = spinner();
 	// spinners.push({
@@ -69,13 +75,13 @@ try {
 	outro(`Downloaded all folders and files, come visit soon ^^`);
 } catch (error) {
 	spinners.forEach((spObject) => {
-		spObject.sp.stop(spObject.errorMessage);
+		if (spObject.sp.isOn) spObject.sp.stop(spObject.errorMessage);
 	});
 
 	cancel(error.cancelationMessage);
 
 	if (process.argv[2] !== "dev") {
-		outro(`I wish that the issue is solved soon!`);
+		// outro(`I wish that the issue is solved soon!`);
 		process.exit(0);
 	}
 
