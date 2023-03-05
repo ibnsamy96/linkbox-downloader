@@ -1,36 +1,39 @@
 {
-  "name": "@ibnsamy96/linkbox-directory-downloader",
-  "version": "0.0.0-development",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start": "node index.js",
-    "start:dev": "node index.js dev",
-    "test": "",
-    "build": "",
-    "semantic-release": "semantic-release"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@clack/prompts": "^0.4.3",
-    "nodejs-file-downloader": "^4.10.6",
-    "semantic-release": "^20.1.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ibnsamy96/linkbox-folder-downloader.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
-  },
-  "devDependencies": {
-    "semantic-release": "^20.1.0"
-  }
+	"name": "@ibnsamy96/testing-linkbox-directory-downloader",
+	"version": "0.0.0-development",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node index.js",
+		"start:dev": "node index.js dev",
+		"test": "",
+		"build": "",
+		"semantic-release": "semantic-release"
+	},
+	"bin": {
+		"lbx-downloader": "./index.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@clack/prompts": "^0.4.3",
+		"nodejs-file-downloader": "^4.10.6",
+		"semantic-release": "^20.1.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ibnsamy96/linkbox-folder-downloader.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"release": {
+		"branches": [
+			"main"
+		]
+	},
+	"devDependencies": {
+		"semantic-release": "^20.1.0"
+	}
 }
