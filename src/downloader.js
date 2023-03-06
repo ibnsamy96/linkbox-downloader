@@ -3,6 +3,7 @@ import * as fs from "fs";
 import Downloader from "nodejs-file-downloader";
 import path from "path";
 import { URL } from "url";
+import paths from "./paths.js";
 
 // const generateMainDirectoryLink = (folderId) =>
 // 	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=0`;
@@ -205,10 +206,8 @@ export const saveFetchedUrls = async (baseFolderName, url, parsedList) => {
 	// console.log(metadata);
 
 	try {
-		const logDirectory = "./linkbox_logs";
-		if (!fs.existsSync(logDirectory)) {
-			fs.mkdirSync(logDirectory);
-		}
+		const logDirectory = paths.logs;
+
 		// console.log(now);
 		const filePath = path.join(
 			logDirectory,

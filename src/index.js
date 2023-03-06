@@ -8,7 +8,11 @@ import download, {
 	getBaseFolderName,
 } from "./downloader.js";
 import { intro, outro, text, spinner, cancel, select } from "@clack/prompts";
-import { addCancelPrompt } from "./helpers.js";
+import { addCancelPrompt, createDirIfNotExist } from "./helpers.js";
+import paths from "./paths.js";
+
+// let configsDirectory = path.join(homedir(), "linkbox-downloader");
+// createDirIfNotExist(configsDirectory);
 
 export default async function main(devMode = false) {
 	const spinners = [];
@@ -70,7 +74,7 @@ export default async function main(devMode = false) {
 		// });
 		filesDownloadingSpinner.start("");
 		filesDownloadingSpinner.stop("Started downloading files...");
-		await download(["downloads"], parsedList, baseDirectoryName);
+		await download([paths.downloads], parsedList, baseDirectoryName);
 
 		// console.log(`/-- Downloaded All Folders --/`);
 		outro(`Downloaded all folders and files, come visit soon ^^`);
