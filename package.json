@@ -5,14 +5,14 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"start": "node index.js",
-		"start:dev": "node index.js dev",
+		"start": "node ./src/index.js",
+		"start:dev": "node ./src/index.js dev",
 		"test": "",
 		"build": "",
 		"semantic-release": "semantic-release"
 	},
 	"bin": {
-		"lbx-downloader": "./index.js"
+		"lbx-downloader": "./bin/lbx-downloader.js"
 	},
 	"author": "",
 	"license": "ISC",
