@@ -1,4 +1,5 @@
 import { isCancel, cancel, note, spinner } from "@clack/prompts";
+import * as fs from "fs";
 
 export const addCancelPrompt = (inputField, cancelationMessage) => {
 	if (isCancel(inputField)) {
@@ -19,4 +20,10 @@ export const addTimer = (startMessage, errorMessage, spinnersArray) => {
 	});
 	sp.start(startMessage);
 	return sp;
+};
+
+export const createDirIfNotExist = (path) => {
+	if (!fs.existsSync(path)) {
+		fs.mkdirSync(path);
+	}
 };
