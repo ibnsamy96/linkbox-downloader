@@ -5,7 +5,7 @@ import startApp from "../src/index.js";
 
 const args = process.argv.slice(2);
 
-const scriptIndex = args.findIndex((x) => x === "dir");
+const scriptIndex = args.findIndex((x) => x === "dir" || x === "dev");
 const script = scriptIndex === -1 ? args[0] : args[scriptIndex];
 
 // console.log(args);
@@ -26,6 +26,10 @@ switch (script) {
 				break;
 		}
 		spawn(explorer, [path], { detached: true }).unref();
+		break;
+
+	case "dev":
+		startApp(true);
 		break;
 
 	default:

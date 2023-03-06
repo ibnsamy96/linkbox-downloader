@@ -8,9 +8,9 @@ import download, {
 	getBaseFolderName,
 } from "./downloader.js";
 import { intro, outro, text, spinner, cancel, select } from "@clack/prompts";
-import { addCancelPrompt } from "./helper.js";
+import { addCancelPrompt } from "./helpers.js";
 
-export default async function main() {
+export default async function main(devMode = false) {
 	const spinners = [];
 
 	try {
@@ -81,7 +81,7 @@ export default async function main() {
 
 		cancel(error.cancelationMessage);
 
-		if (process.argv[2] !== "dev") {
+		if (!devMode) {
 			// outro(`I wish that the issue is solved soon!`);
 			process.exit(0);
 		}

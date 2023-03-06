@@ -143,7 +143,12 @@ export const getAllDownloadLinks = async (shareToken, pid) => {
 
 	function extractResponseContentList(responseJSON) {
 		if (responseJSON.data) return responseJSON.data.list;
-		throw new Error("Make sure that link is right!");
+		// } catch (error) {
+		const error = new Error("Make sure that link is right!");
+		error.cancelationMessage = `Make sure that link is right!`;
+		throw error;
+		// }
+		// throw
 	}
 
 	async function recursiveCascadeToLeastFile(list) {
