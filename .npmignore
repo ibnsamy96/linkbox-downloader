@@ -1,0 +1,17 @@
+# node project defaults
+node_modules
+package-lock.json
+
+# app created log and download files
+downloads
+linkbox_logs
+
+# editor
+.vscode
+
+# unused files
+*.jpg
+*.gif
+*.png
+test/
+.circleci
