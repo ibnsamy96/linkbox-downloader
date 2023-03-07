@@ -62,8 +62,7 @@ const clearLastLine = () => {
 
 const generateFilePath = (args) => {
 	// handle path commom issues
-	return path.join(...args); //.replaceAll(" ", "_");
-};
+	args = args.map(arg => arg.trim())
 
 const isEpisodeDownloaded = (filePath) => {
 	// const filePath = path.join(...args);
