@@ -1,20 +1,27 @@
 {
 	"name": "@ibnsamy96/linkbox-downloader",
-	"version": "1.0.1",
-	"description": "",
-	"main": "index.js",
+	"version": "1.0.2",
+	"description": "Unofficial cli-utility for downloading files and folders from linkbox.to",
+	"author": "Mahmoud Samy <ibnsamy96@gmail.com> (https://ibnsamy.com/)",
+	"main": "./bin/lbx-downloader.js",
 	"type": "module",
 	"scripts": {
-		"start": "node ./src/index.js",
-		"start:dev": "node ./bin/lbx-downloader.js dev",
+		"start": "node ./bin/lbx-downloader.js",
+		"start:dev": "node ./bin/lbx-downloader.js -d",
 		"test": "",
 		"build": ""
 	},
 	"bin": {
 		"lbx-downloader": "./bin/lbx-downloader.js"
 	},
-	"author": "",
-	"license": "ISC",
+	"keywords": [
+		"cli",
+		"linkbox",
+		"downloader",
+		"file download",
+		"command line"
+	],
+	"license": "MIT",
 	"dependencies": {
 		"@clack/prompts": "^0.4.3",
 		"nodejs-file-downloader": "^4.10.6"

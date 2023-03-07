@@ -49,7 +49,7 @@ Options
 		break
 	case "-v":
 	case "--version":
-		console.log(`linkbox-downloader@v1.0.1`)
+		console.log(`linkbox-downloader@v1.0.2`)
 		break
 	default:
 		console.error(`Invalid option: ${option}.`)
