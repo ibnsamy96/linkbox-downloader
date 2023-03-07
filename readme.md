@@ -4,13 +4,13 @@
 
 # LinkBox-Downloader
 
-Unofficial cli utility for downloading files and folders from linkbox.to
+Unofficial cli-utility for downloading files and folders from linkbox.to
 
 </div>
 
 ## About LinkBox
 
-[Linkbox](https://www.linkbox.to) is a file hosting and sharing website that allows users to upload and download files. It is commonly used to share large files that are too big to be sent via email. Linkbox provides users with a link to their uploaded file, which they can share with others to allow them to download the file.
+[LinkBox](https://www.linkbox.to) is a file hosting and sharing website that allows users to upload and download files. It is commonly used to share large files that are too big to be sent via email. Linkbox provides users with a link to their uploaded files, which they can share with others.
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ Before using linkbox-downloader, please ensure that you have the following:
 
 ## Installation
 
-You can install this CLI utility globally by running the following command:
+You can install the utility globally by running the following command:
 
 ```shell
 npm install -g @ibnsamy96/linkbox-downloader
