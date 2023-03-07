@@ -1,6 +1,6 @@
 <div align='center' >
 
-![linkbox-downloader logo](https://github.com/ibnsamy96/linkbox-downloader/raw/main/logo.jpg)
+![linkbox-downloader logo](https://raw.githubusercontent.com/ibnsamy96/linkbox-downloader/main/logo.jpg)
 
 # LinkBox-Downloader
 
@@ -24,18 +24,25 @@ Before using linkbox-downloader, please ensure that you have the following:
 You can install this CLI utility globally by running the following command:
 
 ```shell
-npm install -g @ibnsamy96/lbx-downloader
+npm install -g @ibnsamy96/linkbox-downloader
 ```
 
 ## Usage
 
-To use the LBX Downloader, open a terminal or command prompt and type `lbx-downloader`.
+To use the LBX Downloader, open a terminal or command prompt and type `lbx-downloader`.  
+Follow the displayed instructions by entering the desired directory link to download.  
+By default, the downloads location is `%userprofile%\linkbox-downloader\downloads`.
 
 ### Options
 
+- `-o, --open` - open the downloads folder
+- `-d, --dev` - start the utility in dev-mode
 - `-h, --help` - display help information
 - `-v, --version` - display version information
-- `-d, --dir <directory>` - specify the directory to download files to
+
+## Demo
+
+![linkbox-downloader demo](https://raw.githubusercontent.com/ibnsamy96/linkbox-downloader/main/demo.gif)
 
 ## License
 

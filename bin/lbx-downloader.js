@@ -1,8 +1,14 @@
 #!/usr/bin/env node
+
 import { platform } from "os"
 import { spawn } from "child_process"
 import startApp from "../src/index.js"
 import paths from "../src/paths.js"
+// import packageJson from "../package.json" assert { type: "json" }
+
+// const packageJson = await import("../package.json", {
+// 	assert: { type: "json" },
+// })
 
 const args = process.argv.slice(2)
 const option = args[0]
@@ -43,7 +49,7 @@ Options
 		break
 	case "-v":
 	case "--version":
-		console.log(`linkbox-downloader@v1.0.0`)
+		console.log(`linkbox-downloader@v1.0.1`)
 		break
 	default:
 		console.error(`Invalid option: ${option}.`)
