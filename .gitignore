@@ -6,5 +6,8 @@ package-lock.json
 downloads
 linkbox_logs
 
-#editor
+# editor
 .vscode
+
+# prod files
+/dest

@@ -15,3 +15,7 @@ linkbox_logs
 *.png
 test/
 .circleci
+
+# development files
+/bin
+/src

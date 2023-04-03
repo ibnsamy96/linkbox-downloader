@@ -37,5 +37,11 @@
 		"branches": [
 			"main"
 		]
+	},
+	"devDependencies": {
+		"del": "^7.0.0",
+		"gulp": "^4.0.2",
+		"gulp-replace": "^1.1.4",
+		"gulp-uglify": "^3.0.2"
 	}
 }
