@@ -15,7 +15,8 @@ linkbox_logs
 *.png
 test/
 .circleci
+gulpfile.js
 
 # development files
-/bin
-/src
+bin/lbx-downloader.js
+src/

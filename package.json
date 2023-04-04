@@ -9,7 +9,8 @@
 		"start": "node ./bin/lbx-downloader.js",
 		"start:dev": "node ./bin/lbx-downloader.js -d",
 		"test": "",
-		"build": ""
+		"build": "gulp",
+		"publish": "cd dest && npm publish"
 	},
 	"bin": {
 		"lbx-downloader": "./bin/lbx-downloader.js"
@@ -41,6 +42,7 @@
 	"devDependencies": {
 		"del": "^7.0.0",
 		"gulp": "^4.0.2",
+		"gulp-json-editor": "^2.5.6",
 		"gulp-replace": "^1.1.4",
 		"gulp-uglify": "^3.0.2"
 	}
