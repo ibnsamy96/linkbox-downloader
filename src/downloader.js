@@ -1,5 +1,5 @@
 // import { error } from "console";
-import * as fs from "fs"
+import fs from "fs"
 import Downloader from "nodejs-file-downloader"
 import path from "path"
 import { URL } from "url"
@@ -281,4 +281,13 @@ export default async function downloadDirectory(
 		// 	}
 		// }
 	}
+}
+
+export const exportedForTesting = {
+	generateSubFolderOrFileLink,
+	generateFolderBaseInfoLink,
+	getData,
+	generateFilePath,
+	clearLastLine,
+	isEpisodeDownloaded,
 }
