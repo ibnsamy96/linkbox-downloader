@@ -50,10 +50,10 @@ async function useDefaultDownloadFolder() {
 	}
 }
 
-async function updateDownloadFolder(path) {
+async function updateDownloadFolder(newDownloadPath) {
 	try {
 		const configs = parseConfigsFile()
-		configs["download-dir"] = path
+		configs["download-dir"] = newDownloadPath
 		const newConfigsString = unParseConfigsFile(configs)
 		fs.writeFileSync(paths.configs, newConfigsString, "utf8")
 	} catch (err) {
@@ -67,7 +67,7 @@ async function updateDownloadFolderUI() {
 		cancel: "cancel",
 	}
 
-	const proposedDownloadDir = await text({
+	let proposedDownloadDir = await text({
 		message: "Where to download your files?",
 		placeholder:
 			"Write a the full absolute path of the downloads directory you want.",
@@ -80,6 +80,8 @@ async function updateDownloadFolderUI() {
 		proposedDownloadDir,
 		"Operation cancelled, the downloads path will stay unchanged."
 	)
+
+	proposedDownloadDir = path.normalize(proposedDownloadDir)
 
 	const isPathExist = fs.existsSync(proposedDownloadDir)
 	if (isPathExist) {
