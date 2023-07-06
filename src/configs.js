@@ -45,8 +45,11 @@ async function useDefaultDownloadFolder() {
 		configs["download-dir"] = ""
 		const newConfigsString = unParseConfigsFile(configs)
 		fs.writeFileSync(paths.configs, newConfigsString, "utf8")
-	} catch (err) {
-		console.error(err)
+	} catch (error) {
+		// const error = new Error("File path is unchanged.")
+		error.cancelationMessage = "Couldn't update the file."
+		throw error
+		// console.error(err)
 	}
 }
 
@@ -56,50 +59,60 @@ async function updateDownloadFolder(newDownloadPath) {
 		configs["download-dir"] = newDownloadPath
 		const newConfigsString = unParseConfigsFile(configs)
 		fs.writeFileSync(paths.configs, newConfigsString, "utf8")
-	} catch (err) {
-		console.error(err)
+	} catch (error) {
+		// const error = new Error("File path is unchanged.")
+		error.cancelationMessage = "Couldn't update the file."
+		throw error
+		// console.error(err)
 	}
 }
 
 async function updateDownloadFolderUI() {
-	const returnStates = {
-		done: "done",
-		cancel: "cancel",
-	}
+	try {
+		const returnStates = {
+			done: "done",
+			cancel: "cancel",
+		}
 
-	let proposedDownloadDir = await text({
-		message: "Where to download your files?",
-		placeholder:
-			"Write a the full absolute path of the downloads directory you want.",
-		validate: text => {
-			if (!path.isAbsolute(text))
-				return `Text doesn't seem to represent an absolute path.`
-		},
-	})
-	addCancelPrompt(
-		proposedDownloadDir,
-		"Operation cancelled, the downloads path will stay unchanged."
-	)
+		let proposedDownloadDir = await text({
+			message: "Where to download your files?",
+			placeholder:
+				"Write a the full absolute path of the downloads directory you want.",
+			validate: text => {
+				if (!path.isAbsolute(text))
+					return `Text doesn't seem to represent an absolute path.`
+			},
+		})
+		addCancelPrompt(
+			proposedDownloadDir,
+			"Operation cancelled, the downloads path will stay unchanged."
+		)
 
-	proposedDownloadDir = path.normalize(proposedDownloadDir)
+		proposedDownloadDir = path.normalize(proposedDownloadDir)
 
-	const isPathExist = fs.existsSync(proposedDownloadDir)
-	if (isPathExist) {
-		// do the job
+		const isPathExist = fs.existsSync(proposedDownloadDir)
+		if (isPathExist) {
+			// do the job
+			updateDownloadFolder(proposedDownloadDir)
+			return returnStates.done
+		}
+
+		const shouldContinue = await confirm({
+			message:
+				"Your path doesn't exist, do you want me to create the directory for you?",
+		})
+
+		if (!shouldContinue) return returnStates.cancel
+
+		createDirIfNotExist(proposedDownloadDir)
 		updateDownloadFolder(proposedDownloadDir)
 		return returnStates.done
+	} catch (error) {
+		// const error = new Error("File path is unchanged.")
+		error.cancelationMessage =
+			"Error happened while working on updating the file path."
+		throw error
 	}
-
-	const shouldContinue = await confirm({
-		message:
-			"Your path doesn't exist, do you want me to create the directory for you?",
-	})
-
-	if (!shouldContinue) return returnStates.cancel
-
-	createDirIfNotExist(proposedDownloadDir)
-	updateDownloadFolder(proposedDownloadDir)
-	return returnStates.done
 }
 
 export default async function main() {
@@ -126,29 +139,40 @@ export default async function main() {
 			],
 		})
 
-		console.log(neededConfigs)
+		// console.log(neededConfigs)
 
 		const configsUIs = {
 			down_path: updateDownloadFolderUI,
 			default_down_path: useDefaultDownloadFolder,
 		}
 
-		await configsUIs[neededConfigs]()
+		const savingState = await configsUIs[neededConfigs]()
+
+		switch (savingState) {
+			case "done":
+				outro(`Your updates are saved ^^`)
+				break
+			case "cancel":
+				outro(`No configs were changed.`)
+				break
+
+			default:
+				break
+		}
 
 		// console.log(`/-- Downloaded All Folders --/`);
-		outro(`Your updates are saved ^^`)
 	} catch (error) {
 		// spinners.forEach(spObject => {
 		// 	if (spObject.sp.isOn) spObject.sp.stop(spObject.errorMessage)
 		// })
 
-		console.log(error)
+		// console.log(error)
 
 		cancel(error.cancelationMessage)
 
 		// if (!devMode) {
 		outro(`I wish that the issue is solved soon!`)
-		// 	process.exit(0)
+		// process.exit(0)
 		// }
 
 		// intro(`Error Tracer`)
