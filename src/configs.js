@@ -1,21 +1,4 @@
-#!/usr/bin/env node
-
-// import download from "./downloader.js";
-// import download, {
-// 	parseLink,
-// 	getAllDownloadLinks,
-// 	saveFetchedUrls,
-// 	getBaseFolderName,
-// } from "./downloader.js"
-import {
-	intro,
-	outro,
-	text,
-	spinner,
-	cancel,
-	select,
-	confirm,
-} from "@clack/prompts"
+import { intro, outro, text, cancel, select, confirm } from "@clack/prompts"
 import {
 	addCancelPrompt,
 	createDirIfNotExist,
@@ -23,10 +6,12 @@ import {
 } from "./helpers.js"
 import paths from "./paths.js"
 import path from "path"
-// let configsDirectory = path.join(homedir(), "linkbox-downloader");
-// createDirIfNotExist(configsDirectory);
 import fs from "fs"
-import { config } from "process"
+
+const returnStates = {
+	done: "done",
+	cancel: "cancel",
+}
 
 function unParseConfigsFile(configs) {
 	const lines = []
@@ -45,6 +30,7 @@ async function useDefaultDownloadFolder() {
 		configs["download-dir"] = ""
 		const newConfigsString = unParseConfigsFile(configs)
 		fs.writeFileSync(paths.configs, newConfigsString, "utf8")
+		return returnStates.done
 	} catch (error) {
 		// const error = new Error("File path is unchanged.")
 		error.cancelationMessage = "Couldn't update the file."
@@ -69,11 +55,6 @@ async function updateDownloadFolder(newDownloadPath) {
 
 async function updateDownloadFolderUI() {
 	try {
-		const returnStates = {
-			done: "done",
-			cancel: "cancel",
-		}
-
 		let proposedDownloadDir = await text({
 			message: "Where to download your files?",
 			placeholder:
@@ -149,10 +130,10 @@ export default async function main() {
 		const savingState = await configsUIs[neededConfigs]()
 
 		switch (savingState) {
-			case "done":
+			case returnStates.done:
 				outro(`Your updates are saved ^^`)
 				break
-			case "cancel":
+			case returnStates.cancel:
 				outro(`No configs were changed.`)
 				break
 
@@ -171,7 +152,7 @@ export default async function main() {
 		cancel(error.cancelationMessage)
 
 		// if (!devMode) {
-		outro(`I wish that the issue is solved soon!`)
+		outro(`No configs were changed, Please try again!`)
 		// process.exit(0)
 		// }
 
