@@ -95,6 +95,7 @@ async function updateDownloadFolderUI() {
 		throw error
 	}
 }
+
 async function updateProxyUrl(newProxyUrl) {
 	try {
 		const configs = parseConfigsFile()
@@ -106,6 +107,79 @@ async function updateProxyUrl(newProxyUrl) {
 		error.cancelationMessage = "Couldn't update the file."
 		throw error
 		// console.error(err)
+	}
+}
+
+async function useProxyUI() {
+	try {
+		const proposedHost = await text({
+			message: "What is the proxy host?",
+			placeholder: "Enter only the host, without the protocol.",
+			validate: text => {
+				const pattern =
+					/^(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\[[a-fA-F\d:]+\])$/
+
+				if (!pattern.test(text))
+					return `Text doesn't seem to represent a host value.`
+			},
+		})
+		addCancelPrompt(
+			proposedHost,
+			"Operation cancelled, the proxy path will stay unchanged."
+		)
+
+		const proposedPort = await text({
+			message: "What is the proxy port?",
+			placeholder: "Enter only the port.",
+			validate: text => {
+				const pattern =
+					/^(?:[1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/
+
+				if (!pattern.test(text))
+					return `Text doesn't seem to represent a port value.`
+			},
+		})
+		addCancelPrompt(
+			proposedPort,
+			"Operation cancelled, the proxy path will stay unchanged."
+		)
+
+		const proposedProtocol = await select({
+			message: "What protocol do you want to use?",
+			options: [
+				{ value: "http", label: "HTTP" },
+				{ value: "https", label: "HTTPS" },
+			],
+		})
+		addCancelPrompt(
+			proposedPort,
+			"Operation cancelled, the proxy path will stay unchanged."
+		)
+
+		const proxyUrl = `${proposedProtocol}://${proposedHost}:${proposedPort}`
+		// TODO check if proxy isn't connecting ask the user before submit
+		updateProxyUrl(proxyUrl)
+		return returnStates.done
+		// const isPathExist = fs.existsSync(proposedDownloadDir)
+		// if (isPathExist) {
+		// 	updateDownloadFolder(proposedDownloadDir)
+		// 	return returnStates.done
+		// }
+
+		// const shouldContinue = await confirm({
+		// 	message:
+		// 		"Your path doesn't exist, do you want me to create the directory for you?",
+		// })
+
+		// if (!shouldContinue) return returnStates.cancel
+
+		// createDirIfNotExist(proposedDownloadDir)
+		// updateDownloadFolder(proposedDownloadDir)
+		// return returnStates.done
+	} catch (error) {
+		error.cancelationMessage =
+			"Error happened while working on changing the proxy settings."
+		throw error
 	}
 }
 
@@ -130,14 +204,17 @@ export default async function main() {
 					value: "default_down_path",
 					label: "Use the default download directory.",
 				},
+				{
+					value: "add_proxy",
+					label: "Use proxy, Add host and port and use them.",
+				},
 			],
 		})
-
-		// console.log(neededConfigs)
 
 		const configsUIs = {
 			down_path: updateDownloadFolderUI,
 			default_down_path: useDefaultDownloadFolder,
+			add_proxy: useProxyUI,
 		}
 
 		const savingState = await configsUIs[neededConfigs]()
