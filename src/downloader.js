@@ -4,6 +4,8 @@ import Downloader from "nodejs-file-downloader"
 import path from "path"
 import { URL } from "url"
 import paths from "./paths.js"
+import fetch from "node-fetch"
+import { HttpsProxyAgent } from "https-proxy-agent"
 
 // const generateMainDirectoryLink = (folderId) =>
 // 	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=0`;
@@ -16,7 +18,11 @@ const generateFolderBaseInfoLink = pid =>
 
 const getData = async function (url) {
 	try {
-		const req = await fetch(url)
+		const proxyHost = "192.168.1.5"
+		const proxyPort = 8080
+		const proxyUrl = `http://${proxyHost}:${proxyPort}`
+		const proxyAgent = new HttpsProxyAgent(proxyUrl)
+		const req = await fetch(url, { agent: proxyAgent })
 		const data = await req.json()
 		return data
 	} catch (error) {
