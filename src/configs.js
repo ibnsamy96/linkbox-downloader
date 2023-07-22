@@ -95,6 +95,19 @@ async function updateDownloadFolderUI() {
 		throw error
 	}
 }
+async function updateProxyUrl(newProxyUrl) {
+	try {
+		const configs = parseConfigsFile()
+		configs["proxy-url"] = newProxyUrl
+		const newConfigsString = unParseConfigsFile(configs)
+		fs.writeFileSync(paths.configs, newConfigsString, "utf8")
+	} catch (error) {
+		// const error = new Error("File path is unchanged.")
+		error.cancelationMessage = "Couldn't update the file."
+		throw error
+		// console.error(err)
+	}
+}
 
 export default async function main() {
 	// const spinners = []
