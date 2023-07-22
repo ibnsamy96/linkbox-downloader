@@ -153,35 +153,9 @@ export default async function main() {
 			default:
 				break
 		}
-
-		// console.log(`/-- Downloaded All Folders --/`);
 	} catch (error) {
-		// spinners.forEach(spObject => {
-		// 	if (spObject.sp.isOn) spObject.sp.stop(spObject.errorMessage)
-		// })
-
-		// console.log(error)
-
 		cancel(error.cancelationMessage)
 
-		// if (!devMode) {
 		outro(`No configs were changed, Please try again!`)
-		// process.exit(0)
-		// }
-
-		// intro(`Error Tracer`)
-
-		// const isErrorNeedsToBeTraced = await select({
-		// 	message:
-		// 		"An error happened, do you want to trace it for debugging purposes or just to know it?",
-		// 	options: [
-		// 		{ value: true, label: "Yes, trace it." },
-		// 		{ value: false, label: "No, the cancelation message was enough." },
-		// 	],
-		// })
-		// addCancelPrompt(isErrorNeedsToBeTraced, "Operation canceled.")
-
-		// if (isErrorNeedsToBeTraced) throw error
-		// outro(`I wish you luck solving the issue ^^`)
 	}
 }
