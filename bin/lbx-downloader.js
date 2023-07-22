@@ -3,6 +3,7 @@
 import { platform } from "os"
 import { spawn } from "child_process"
 import startApp from "../src/index.js"
+import updateConfigs from "../src/configs.js"
 import paths from "../src/paths.js"
 // import packageJson from "../package.json" assert { type: "json" }
 
@@ -25,6 +26,9 @@ switch (option) {
 	case "-d":
 	case "--dev":
 		startApp(true)
+	case "-c":
+	case "--configs":
+		updateConfigs()
 		break
 	case "-o":
 	case "--open":
@@ -43,6 +47,7 @@ To use the LBX Downloader, open a terminal or command prompt and type 'lbx-downl
 Options
   -o, --open - open the downloads directory
   -d, --dev - start the utility in dev-mode
+  -c, --configs - update the utility configurations
   -h, --help - display help information
   -v, --version - display version information
 	`)

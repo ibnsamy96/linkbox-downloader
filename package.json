@@ -8,6 +8,8 @@
 	"scripts": {
 		"start": "node ./bin/lbx-downloader.js",
 		"start:dev": "node ./bin/lbx-downloader.js -d",
+		"start:config": "node ./bin/lbx-downloader.js -c",
+		"start:open": "node ./bin/lbx-downloader.js -o",
 		"test": "jasmine tests/*.spec.js",
 		"build": "gulp",
 		"publish": "cd dest && npm publish"
