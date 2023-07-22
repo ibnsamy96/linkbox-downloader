@@ -31,12 +31,13 @@ npm install -g @ibnsamy96/linkbox-downloader
 
 To use the LBX Downloader, open a terminal or command prompt and type `lbx-downloader`.  
 Follow the displayed instructions by entering the desired directory link to download.  
-By default, the downloads location is `%userprofile%\linkbox-downloader\downloads`.
+By default, the downloads location is `%userprofile%\linkbox-downloader\downloads` but you can change it in the utility configurations.
 
 ### Options
 
 - `-o, --open` - open the downloads folder
 - `-d, --dev` - start the utility in dev-mode
+- `-c, --configs` - update the utility configurations
 - `-h, --help` - display help information
 - `-v, --version` - display version information
 
