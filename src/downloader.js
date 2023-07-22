@@ -6,6 +6,7 @@ import { URL } from "url"
 import paths from "./paths.js"
 import fetch from "node-fetch"
 import { HttpsProxyAgent } from "https-proxy-agent"
+import { parseConfigsFile } from "./helpers.js"
 
 // const generateMainDirectoryLink = (folderId) =>
 // 	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=0`;
@@ -18,14 +19,15 @@ const generateFolderBaseInfoLink = pid =>
 
 const getData = async function (url) {
 	try {
-		const proxyHost = "192.168.1.5"
-		const proxyPort = 8080
-		const proxyUrl = `http://${proxyHost}:${proxyPort}`
-		const proxyAgent = new HttpsProxyAgent(proxyUrl)
+		const configs = parseConfigsFile()
+		const proxyUrl = configs["proxy-url"]
+		const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined
+
 		const req = await fetch(url, { agent: proxyAgent })
 		const data = await req.json()
 		return data
 	} catch (error) {
+		// console.log(error)
 		error.cancelationMessage =
 			"Couldn't complete the fetch process, make sure that you're connected and LinkBox is available."
 		throw error
