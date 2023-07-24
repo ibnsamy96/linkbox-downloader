@@ -33,11 +33,8 @@ const createProxyAgents = function* () {
 	if (!proxies) {
 		return undefined
 	} else {
-		const i = 0
+		let i = 0
 		while (true) {
-			if (i >= proxies.length) {
-				i = 0
-			}
 			const proxy = proxies[i]
 			const proxyUrl = generateProxyUrl(proxy)
 			console.log(proxyUrl)
