@@ -158,10 +158,34 @@ async function useProxiesUI() {
 			"Operation cancelled, the proxy path will stay unchanged."
 		)
 
+		const hasAuth = await confirm({
+			message: "Does your server has a username/password authentication?",
+		})
+
+		let proposedUser, proposedPass
+		if (hasAuth) {
+			proposedUser = await text({
+				message: "What is the username?",
+			})
+			addCancelPrompt(
+				proposedPort,
+				"Operation cancelled, the proxy path will stay unchanged."
+			)
+			proposedPass = await text({
+				message: "What is the password?",
+			})
+			addCancelPrompt(
+				proposedPort,
+				"Operation cancelled, the proxy path will stay unchanged."
+			)
+		}
+
 		const proxy = {
 			protocol: proposedProtocol,
 			host: proposedHost,
 			port: proposedPort,
+			username: proposedUser,
+			password: proposedPass,
 		}
 		// TODO check if proxy isn't connecting ask the user before submit
 		updateProxies(proxy)

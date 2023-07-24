@@ -18,7 +18,7 @@ const generateFolderBaseInfoLink = pid =>
 	`https://www.linkbox.to/api/file/folder_base_info?dirId=${pid}&lan=en`
 
 const generateProxyUrl = proxy => {
-	const { username, password, protocol, host, port } = proxy
+	const { protocol, host, port, username, password } = proxy
 	const proxyUrl =
 		username && password
 			? `${protocol}://${username}:${password}@${host}:${port}`
@@ -29,7 +29,6 @@ const generateProxyUrl = proxy => {
 const createProxyAgents = function* () {
 	const configs = parseConfigsFile()
 	const proxies = JSON.parse(configs["proxies"] || null)
-
 	if (!proxies) {
 		return undefined
 	} else {
