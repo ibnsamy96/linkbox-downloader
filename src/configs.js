@@ -1,12 +1,23 @@
-import { intro, outro, text, cancel, select, confirm } from "@clack/prompts"
+import {
+	intro,
+	outro,
+	text,
+	cancel,
+	select,
+	confirm,
+	spinner,
+} from "@clack/prompts"
 import {
 	addCancelPrompt,
 	createDirIfNotExist,
 	parseConfigsFile,
+	generateProxyUrl,
+	createProxyAgent,
 } from "./helpers.js"
 import paths from "./paths.js"
 import path from "path"
 import fs from "fs"
+import fetch from "node-fetch"
 
 const returnStates = {
 	done: "done",
@@ -93,6 +104,25 @@ async function updateDownloadFolderUI() {
 		error.cancelationMessage =
 			"Error happened while working on updating the file path."
 		throw error
+	}
+}
+
+async function isProxyReachableAndChangingIP(proxy) {
+	const identIPLink = "https://ident.me/ip"
+	const proxyUrl = generateProxyUrl(proxy)
+	const proxyAgent = createProxyAgent(proxyUrl)
+	try {
+		const response = await Promise.all([
+			fetch(identIPLink),
+			fetch(identIPLink, { agent: proxyAgent }),
+		])
+		const data = await Promise.all([response[0].text(), response[1].text()])
+
+		if (data[0] === data[1]) return { reachable: true, changingIP: false }
+
+		return { reachable: true, changingIP: true }
+	} catch (error) {
+		return { reachable: false }
 	}
 }
 
@@ -187,25 +217,32 @@ async function useProxiesUI() {
 			username: proposedUser,
 			password: proposedPass,
 		}
-		// TODO check if proxy isn't connecting ask the user before submit
+
+		const testingProxySpinner = spinner()
+		testingProxySpinner.start("Testing the proxy")
+		const proxyTestResult = await isProxyReachableAndChangingIP(proxy)
+		testingProxySpinner.stop("Finished testing the proxy")
+
+		if (!proxyTestResult.reachable) {
+			const shouldContinue = await confirm({
+				message:
+					"The proxy seems to be unreachable, do you want to save it anyway?",
+			})
+
+			if (!shouldContinue) return returnStates.cancel
+		}
+
+		if (!proxyTestResult.changingIP) {
+			const shouldContinue = await confirm({
+				message:
+					"The proxy seems to be not changing the device IP, do you want to save it anyway?",
+			})
+
+			if (!shouldContinue) return returnStates.cancel
+		}
+
 		updateProxies(proxy)
 		return returnStates.done
-		// const isPathExist = fs.existsSync(proposedDownloadDir)
-		// if (isPathExist) {
-		// 	updateDownloadFolder(proposedDownloadDir)
-		// 	return returnStates.done
-		// }
-
-		// const shouldContinue = await confirm({
-		// 	message:
-		// 		"Your path doesn't exist, do you want me to create the directory for you?",
-		// })
-
-		// if (!shouldContinue) return returnStates.cancel
-
-		// createDirIfNotExist(proposedDownloadDir)
-		// updateDownloadFolder(proposedDownloadDir)
-		// return returnStates.done
 	} catch (error) {
 		error.cancelationMessage =
 			"Error happened while working on changing the proxy settings."
@@ -261,8 +298,12 @@ export default async function main() {
 				break
 		}
 	} catch (error) {
-		cancel(error.cancelationMessage)
+		cancel(
+			error.cancelationMessage +
+				`\n\n` +
+				` No configs were changed, Please try again!`
+		)
 
-		outro(`No configs were changed, Please try again!`)
+		// outro()
 	}
 }

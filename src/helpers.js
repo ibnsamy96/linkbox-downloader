@@ -2,6 +2,7 @@ import { isCancel, cancel, note, spinner } from "@clack/prompts"
 import * as fs from "fs"
 import path from "path"
 import paths from "./paths.js"
+import { HttpsProxyAgent } from "https-proxy-agent"
 
 export const addCancelPrompt = (inputField, cancelationMessage) => {
 	if (isCancel(inputField)) {
@@ -60,4 +61,17 @@ export function parseConfigsFile(options) {
 	}
 
 	return configs
+}
+
+export const generateProxyUrl = proxy => {
+	const { protocol, host, port, username, password } = proxy
+	const proxyUrl =
+		username && password
+			? `${protocol}://${username}:${password}@${host}:${port}`
+			: `${protocol}://${host}:${port}`
+	return proxyUrl
+}
+
+export const createProxyAgent = proxyUrl => {
+	return new HttpsProxyAgent(proxyUrl)
 }

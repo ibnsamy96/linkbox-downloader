@@ -5,8 +5,11 @@ import path from "path"
 import { URL } from "url"
 import paths from "./paths.js"
 import fetch from "node-fetch"
-import { HttpsProxyAgent } from "https-proxy-agent"
-import { parseConfigsFile } from "./helpers.js"
+import {
+	parseConfigsFile,
+	generateProxyUrl,
+	createProxyAgent,
+} from "./helpers.js"
 
 // const generateMainDirectoryLink = (folderId) =>
 // 	`https://www.linkbox.to/api/file/share_out_list/?pageSize=50&shareToken=${folderId}&pid=0`;
@@ -17,16 +20,7 @@ const generateSubFolderOrFileLink = (shareToken, pid) =>
 const generateFolderBaseInfoLink = pid =>
 	`https://www.linkbox.to/api/file/folder_base_info?dirId=${pid}&lan=en`
 
-const generateProxyUrl = proxy => {
-	const { protocol, host, port, username, password } = proxy
-	const proxyUrl =
-		username && password
-			? `${protocol}://${username}:${password}@${host}:${port}`
-			: `${protocol}://${host}:${port}`
-	return proxyUrl
-}
-
-const createProxyAgents = function* () {
+const createProxiesAgents = function* () {
 	const configs = parseConfigsFile()
 	const proxies = JSON.parse(configs["proxies"] || null)
 	if (!proxies) {
@@ -37,13 +31,13 @@ const createProxyAgents = function* () {
 			if (i >= proxies.length) i = 0
 			const proxy = proxies[i]
 			const proxyUrl = generateProxyUrl(proxy)
-			yield new HttpsProxyAgent(proxyUrl)
+			yield createProxyAgent(proxyUrl)
 			i++
 		}
 	}
 }
 
-const roundedProxiesCreator = createProxyAgents()
+const roundedProxiesCreator = createProxiesAgents()
 
 const getData = async function (url) {
 	try {
