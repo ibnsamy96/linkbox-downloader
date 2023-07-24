@@ -96,10 +96,12 @@ async function updateDownloadFolderUI() {
 	}
 }
 
-async function updateProxyUrl(newProxyUrl) {
+async function updateProxies(newProxy) {
 	try {
 		const configs = parseConfigsFile()
-		configs["proxy-url"] = newProxyUrl
+		const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
+		proxies.push(newProxy)
+		configs["proxies"] = JSON.stringify(proxies)
 		const newConfigsString = unParseConfigsFile(configs)
 		fs.writeFileSync(paths.configs, newConfigsString, "utf8")
 	} catch (error) {
@@ -110,7 +112,7 @@ async function updateProxyUrl(newProxyUrl) {
 	}
 }
 
-async function useProxyUI() {
+async function useProxiesUI() {
 	try {
 		const proposedHost = await text({
 			message: "What is the proxy host?",
@@ -156,9 +158,13 @@ async function useProxyUI() {
 			"Operation cancelled, the proxy path will stay unchanged."
 		)
 
-		const proxyUrl = `${proposedProtocol}://${proposedHost}:${proposedPort}`
+		const proxy = {
+			protocol: proposedProtocol,
+			host: proposedHost,
+			port: proposedPort,
+		}
 		// TODO check if proxy isn't connecting ask the user before submit
-		updateProxyUrl(proxyUrl)
+		updateProxies(proxyUrl)
 		return returnStates.done
 		// const isPathExist = fs.existsSync(proposedDownloadDir)
 		// if (isPathExist) {
@@ -214,7 +220,7 @@ export default async function main() {
 		const configsUIs = {
 			down_path: updateDownloadFolderUI,
 			default_down_path: useDefaultDownloadFolder,
-			add_proxy: useProxyUI,
+			add_proxy: useProxiesUI,
 		}
 
 		const savingState = await configsUIs[neededConfigs]()

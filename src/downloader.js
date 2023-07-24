@@ -17,12 +17,43 @@ const generateSubFolderOrFileLink = (shareToken, pid) =>
 const generateFolderBaseInfoLink = pid =>
 	`https://www.linkbox.to/api/file/folder_base_info?dirId=${pid}&lan=en`
 
+const generateProxyUrl = proxy => {
+	const { username, password, protocol, host, port } = proxy
+	const proxyUrl =
+		username && password
+			? `${protocol}://${username}:${password}@${host}:${port}`
+			: `${protocol}://${host}:${port}`
+	return proxyUrl
+}
+
+const createProxyAgents = function* () {
+	const configs = parseConfigsFile()
+	const proxies = JSON.parse(configs["proxies"] || null)
+
+	if (!proxies) {
+		return undefined
+	} else {
+		const i = 0
+		while (true) {
+			if (i >= proxies.length) {
+				i = 0
+			}
+			const proxy = proxies[i]
+			const proxyUrl = generateProxyUrl(proxy)
+			console.log(proxyUrl)
+			console.log(proxyUrl)
+			console.log(proxyUrl)
+			yield new HttpsProxyAgent(proxyUrl)
+			i++
+		}
+	}
+}
+
+const roundedProxiesCreator = createProxyAgents()
+
 const getData = async function (url) {
 	try {
-		const configs = parseConfigsFile()
-		const proxyUrl = configs["proxy-url"]
-		const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined
-
+		const proxyAgent = roundedProxiesCreator.next().value
 		const req = await fetch(url, { agent: proxyAgent })
 		const data = await req.json()
 		return data
