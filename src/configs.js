@@ -164,7 +164,7 @@ async function useProxiesUI() {
 			port: proposedPort,
 		}
 		// TODO check if proxy isn't connecting ask the user before submit
-		updateProxies(proxyUrl)
+		updateProxies(proxy)
 		return returnStates.done
 		// const isPathExist = fs.existsSync(proposedDownloadDir)
 		// if (isPathExist) {
