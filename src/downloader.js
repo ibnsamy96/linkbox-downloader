@@ -37,11 +37,8 @@ const createProxyAgents = function* () {
 		while (true) {
 			const proxy = proxies[i]
 			const proxyUrl = generateProxyUrl(proxy)
-			console.log(proxyUrl)
-			console.log(proxyUrl)
-			console.log(proxyUrl)
 			yield new HttpsProxyAgent(proxyUrl)
-			i++
+			i = i >= proxies.length ? 0 : i + 1
 		}
 	}
 }
