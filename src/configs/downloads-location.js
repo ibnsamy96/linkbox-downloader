@@ -91,6 +91,10 @@ export async function showDownloadsLocationUI() {
 				},
 			],
 		})
+		addCancelPrompt(
+			neededConfigs,
+			"Operation cancelled, your downloads location will stay unchanged."
+		)
 
 		const configsUIs = {
 			download_location: showCustomDownloadLocationUI,

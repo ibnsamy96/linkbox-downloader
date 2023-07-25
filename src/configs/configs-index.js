@@ -1,5 +1,6 @@
 import { intro, outro, cancel, select } from "@clack/prompts"
 
+import { addCancelPrompt } from "../helpers.js"
 import { formUIReturnState } from "./helpers.js"
 import { showProxiesUI } from "./proxies.js"
 import { showDownloadsLocationUI } from "./downloads-location.js"
@@ -28,6 +29,10 @@ export default async function main() {
 				},
 			],
 		})
+		addCancelPrompt(
+			neededConfigs,
+			"Operation cancelled, your configs will stay unchanged."
+		)
 
 		const configsUIs = {
 			download_location: showDownloadsLocationUI,
