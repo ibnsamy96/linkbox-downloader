@@ -25,7 +25,7 @@ export default async function main() {
 				},
 				{
 					value: "proxies",
-					label: "Edit proxies, Add, remove, update or just test them.",
+					label: "Edit and test proxies.",
 				},
 			],
 		})

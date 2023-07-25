@@ -1,5 +1,5 @@
 import fetch from "node-fetch"
-import { text, select, confirm, spinner } from "@clack/prompts"
+import { text, select, confirm, spinner, note } from "@clack/prompts"
 
 import {
 	addCancelPrompt,
@@ -147,8 +147,27 @@ async function addNewProxy(newProxy) {
 	}
 }
 
+function showStoredProxies() {
+	const configs = parseConfigsFile()
+	const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
+
+	let proxiesMessage
+	if (proxies.length === 0) proxiesMessage = "You didn't add proxies yet."
+	else {
+		proxiesMessage = []
+		proxies.forEach(proxy => {
+			proxiesMessage.push(generateProxyUrl(proxy))
+		})
+		proxiesMessage = proxiesMessage.join("\n")
+	}
+
+	note(proxiesMessage, "Your Stored Proxies")
+}
+
 export async function showProxiesUI() {
 	try {
+		await showStoredProxies()
+
 		const neededConfigs = await select({
 			message: "Choose the option that suits your needs.",
 			options: [
