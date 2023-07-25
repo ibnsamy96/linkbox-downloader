@@ -78,7 +78,6 @@ async function useDefaultDownloadLocation() {
 
 export async function showDownloadsLocationUI() {
 	try {
-		console.log("entered")
 		const neededConfigs = await select({
 			message: "Choose the option that suits your needs?",
 			options: [
