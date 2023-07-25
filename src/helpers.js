@@ -63,6 +63,17 @@ export function parseConfigsFile(options) {
 	return configs
 }
 
+export function stringifyConfigsFile(configs) {
+	const lines = []
+
+	for (const attr in configs) {
+		const line = `${attr}=${configs[attr]}`
+		lines.push(line)
+	}
+
+	return lines.join("\n")
+}
+
 export const generateProxyUrl = proxy => {
 	const { protocol, host, port, username, password } = proxy
 	const proxyUrl =

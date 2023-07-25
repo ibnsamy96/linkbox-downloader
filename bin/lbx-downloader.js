@@ -3,7 +3,7 @@
 import { platform } from "os"
 import { spawn } from "child_process"
 import startApp from "../src/index.js"
-import updateConfigs from "../src/configs.js"
+import updateConfigs from "../src/configs/configs.js"
 import paths from "../src/paths.js"
 // import packageJson from "../package.json" assert { type: "json" }
 
