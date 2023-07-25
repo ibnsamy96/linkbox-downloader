@@ -5,8 +5,6 @@ import { showProxiesUI } from "./proxies.js"
 import { showDownloadsLocationUI } from "./downloads-location.js"
 
 export default async function main() {
-	// const spinners = []
-
 	try {
 		intro(`Welcome to LinkBox Downloader Configurations`)
 
@@ -20,11 +18,6 @@ export default async function main() {
 		const neededConfigs = await select({
 			message: "What do you want to update in the utility configs?",
 			options: [
-				// { value: "down_path", label: "Change the download directory." },
-				// {
-				// 	value: "default_down_path",
-				// 	label: "Use the default download directory.",
-				// },
 				{
 					value: "download_location",
 					label: "Change the downloads location.",
@@ -61,7 +54,5 @@ export default async function main() {
 				`\n\n` +
 				` No configs were changed, Please try again!`
 		)
-
-		// outro()
 	}
 }
