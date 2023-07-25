@@ -30,25 +30,11 @@ async function isProxyReachableAndChangingIP(proxy) {
 	}
 }
 
-async function addNewProxy(newProxy) {
-	try {
-		const configs = parseConfigsFile()
-		const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
-		proxies.push(newProxy)
-		configs["proxies"] = JSON.stringify(proxies)
-		const newConfigsString = stringifyConfigsFile(configs)
-		saveNewConfigs(newConfigsString)
-	} catch (error) {
-		// const error = new Error("File path is unchanged.")
-		error.cancelationMessage = "Couldn't update the file."
-		throw error
-		// console.error(err)
-	}
-}
+async function addNewProxyUI() {
+	const testingProxySpinner = spinner()
 
-export async function showProxiesUI() {
 	try {
-		const proposedHost = await text({
+		const host = await text({
 			message: "What is the proxy host?",
 			placeholder: "Enter only the host, without the protocol.",
 			validate: text => {
@@ -60,11 +46,11 @@ export async function showProxiesUI() {
 			},
 		})
 		addCancelPrompt(
-			proposedHost,
+			host,
 			"Operation cancelled, the proxy path will stay unchanged."
 		)
 
-		const proposedPort = await text({
+		const port = await text({
 			message: "What is the proxy port?",
 			placeholder: "Enter only the port.",
 			validate: text => {
@@ -76,11 +62,11 @@ export async function showProxiesUI() {
 			},
 		})
 		addCancelPrompt(
-			proposedPort,
+			port,
 			"Operation cancelled, the proxy path will stay unchanged."
 		)
 
-		const proposedProtocol = await select({
+		const protocol = await select({
 			message: "What protocol do you want to use?",
 			options: [
 				{ value: "http", label: "HTTP" },
@@ -88,41 +74,34 @@ export async function showProxiesUI() {
 			],
 		})
 		addCancelPrompt(
-			proposedPort,
+			port,
 			"Operation cancelled, the proxy path will stay unchanged."
 		)
 
 		const hasAuth = await confirm({
-			message: "Does your server has a username/password authentication?",
+			message: "Does your server has a username & password authentication?",
 		})
 
-		let proposedUser, proposedPass
+		let username, password
 		if (hasAuth) {
-			proposedUser = await text({
+			username = await text({
 				message: "What is the username?",
 			})
 			addCancelPrompt(
-				proposedPort,
+				port,
 				"Operation cancelled, the proxy path will stay unchanged."
 			)
-			proposedPass = await text({
+			password = await text({
 				message: "What is the password?",
 			})
 			addCancelPrompt(
-				proposedPort,
+				port,
 				"Operation cancelled, the proxy path will stay unchanged."
 			)
 		}
 
-		const proxy = {
-			protocol: proposedProtocol,
-			host: proposedHost,
-			port: proposedPort,
-			username: proposedUser,
-			password: proposedPass,
-		}
+		const proxy = { protocol, host, port, username, password }
 
-		const testingProxySpinner = spinner()
 		testingProxySpinner.start("Testing the proxy")
 		const proxyTestResult = await isProxyReachableAndChangingIP(proxy)
 		testingProxySpinner.stop("Finished testing the proxy")
@@ -146,9 +125,70 @@ export async function showProxiesUI() {
 		addNewProxy(proxy)
 		return formUIReturnState(true)
 	} catch (error) {
-		console.log(error)
-		error.cancelationMessage =
-			"Error happened while working on changing the proxy settings."
+		// console.log(error)
+		testingProxySpinner.stop("Error happened while testing the proxy!")
+
+		error.cancelationMessage = "Error happened while adding the new proxy."
+		throw error
+	}
+}
+
+async function addNewProxy(newProxy) {
+	try {
+		const configs = parseConfigsFile()
+		const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
+		proxies.push(newProxy)
+		configs["proxies"] = JSON.stringify(proxies)
+		const newConfigsString = stringifyConfigsFile(configs)
+		saveNewConfigs(newConfigsString)
+	} catch (error) {
+		error.cancelationMessage = "Couldn't update the file."
+		throw error
+	}
+}
+
+export async function showProxiesUI() {
+	try {
+		const neededConfigs = await select({
+			message: "Choose the option that suits your needs.",
+			options: [
+				{
+					value: "test_proxy",
+					label: "Check reachability and anonymity of one of your proxies.",
+				},
+				{
+					value: "add_proxy",
+					label: "Add a new proxy.",
+				},
+				{
+					value: "edit_proxy",
+					label: "Edit one of your proxies.",
+				},
+				{
+					value: "remove_proxies",
+					label: "Remove one or more of your proxies.",
+				},
+			],
+		})
+		addCancelPrompt(
+			neededConfigs,
+			"Operation cancelled, your proxies will stay unchanged."
+		)
+
+		const configsUIs = {
+			test_proxy: () => {},
+			add_proxy: addNewProxyUI,
+			edit_proxy: () => {},
+			remove_proxies: () => {},
+		}
+
+		const savingState = await configsUIs[neededConfigs]()
+		return savingState
+	} catch (error) {
+		if (!error.cancelationMessage)
+			error.cancelationMessage =
+				"Error happened while updating your proxy configurations."
+
 		throw error
 	}
 }
