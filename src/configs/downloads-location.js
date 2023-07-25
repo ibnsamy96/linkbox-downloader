@@ -105,6 +105,10 @@ export async function showDownloadsLocationUI() {
 
 		return savingState
 	} catch (error) {
+		if (!error.cancelationMessage)
+			error.cancelationMessage =
+				"Error happened while updating your downloads location."
+
 		throw error
 	}
 }
