@@ -2,10 +2,7 @@ import { intro, outro, cancel, select } from "@clack/prompts"
 
 import { formUIReturnState } from "./helpers.js"
 import { showProxiesUI } from "./proxies.js"
-import {
-	showDownloadLocationUI,
-	useDefaultDownloadLocation,
-} from "./download-location.js"
+import { showDownloadsLocationUI } from "./downloads-location.js"
 
 export default async function main() {
 	// const spinners = []
@@ -23,22 +20,25 @@ export default async function main() {
 		const neededConfigs = await select({
 			message: "What do you want to update in the utility configs?",
 			options: [
-				{ value: "down_path", label: "Change the download directory." },
+				// { value: "down_path", label: "Change the download directory." },
+				// {
+				// 	value: "default_down_path",
+				// 	label: "Use the default download directory.",
+				// },
 				{
-					value: "default_down_path",
-					label: "Use the default download directory.",
+					value: "download_location",
+					label: "Change the downloads location.",
 				},
 				{
-					value: "edit_proxies",
+					value: "proxies",
 					label: "Edit proxies, Add, remove, update or just test them.",
 				},
 			],
 		})
 
 		const configsUIs = {
-			down_path: showDownloadLocationUI,
-			default_down_path: useDefaultDownloadLocation,
-			edit_proxies: showProxiesUI,
+			download_location: showDownloadsLocationUI,
+			proxies: showProxiesUI,
 		}
 
 		const savingState = await configsUIs[neededConfigs]()
@@ -55,6 +55,7 @@ export default async function main() {
 				break
 		}
 	} catch (error) {
+		console.log(error)
 		cancel(
 			error.cancelationMessage +
 				`\n\n` +
