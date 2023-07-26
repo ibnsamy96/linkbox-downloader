@@ -10,6 +10,58 @@ import {
 } from "../helpers.js"
 import { formUIReturnState, saveNewConfigs } from "./helpers.js"
 
+function getStoredProxies() {
+	const configs = parseConfigsFile()
+	const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
+	return proxies
+}
+
+async function testProxyUI() {
+	const testingProxySpinner = spinner()
+
+	try {
+		const proxies = getStoredProxies()
+
+		const chosenProxyIndex = await select({
+			message: "Which proxy do you want to test?",
+			options: proxies.map((proxy, index) => ({
+				value: index,
+				label: generateProxyUrl(proxy),
+			})),
+		})
+		addCancelPrompt(
+			chosenProxyIndex,
+			"Operation cancelled, your proxies aren't tested."
+		)
+
+		testingProxySpinner.start("Testing the proxy")
+		const proxyTestResult = await isProxyReachableAndChangingIP(
+			proxies[chosenProxyIndex]
+		)
+		testingProxySpinner.stop("Finished testing the proxy")
+
+		let testMessage = "The proxy is "
+
+		if (!proxyTestResult.reachable) testMessage += "unreachable."
+		else {
+			testMessage += "reachable"
+
+			if (proxyTestResult.changingIP) testMessage += " and is changing you IP."
+			else testMessage += " but isn't changing your IP."
+		}
+
+		note(testMessage, "Test Result")
+
+		return formUIReturnState(true)
+	} catch (error) {
+		testingProxySpinner.stop("Error happened while testing the proxy!")
+
+		error.cancelationMessage =
+			"Error happened while testing the proxy. Try again or contact the developer."
+		throw error
+	}
+}
+
 async function isProxyReachableAndChangingIP(proxy) {
 	const identIPLink = "https://ident.me/ip"
 	const proxyUrl = generateProxyUrl(proxy)
@@ -148,15 +200,13 @@ async function addNewProxy(newProxy) {
 }
 
 function showStoredProxies() {
-	const configs = parseConfigsFile()
-	const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
-
+	const proxies = getStoredProxies()
 	let proxiesMessage
 	if (proxies.length === 0) proxiesMessage = "You didn't add proxies yet."
 	else {
 		proxiesMessage = []
-		proxies.forEach(proxy => {
-			proxiesMessage.push(generateProxyUrl(proxy))
+		proxies.forEach((proxy, index) => {
+			proxiesMessage.push(index + 1 + ". " + generateProxyUrl(proxy))
 		})
 		proxiesMessage = proxiesMessage.join("\n")
 	}
@@ -195,7 +245,7 @@ export async function showProxiesUI() {
 		)
 
 		const configsUIs = {
-			test_proxy: () => {},
+			test_proxy: testProxyUI,
 			add_proxy: addNewProxyUI,
 			edit_proxy: () => {},
 			remove_proxies: () => {},
