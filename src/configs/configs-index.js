@@ -20,12 +20,12 @@ export default async function main() {
 			message: "What do you want to update in the utility configs?",
 			options: [
 				{
-					value: "download_location",
-					label: "Change the downloads location.",
-				},
-				{
 					value: "proxies",
 					label: "Edit and test proxies.",
+				},
+				{
+					value: "download_location",
+					label: "Change the downloads location.",
 				},
 			],
 		})
@@ -53,7 +53,7 @@ export default async function main() {
 				break
 		}
 	} catch (error) {
-		console.log(error)
+		// console.log(error)
 		cancel(
 			error.cancelationMessage +
 				`\n\n` +
