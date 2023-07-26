@@ -1,4 +1,3 @@
-import fetch from "node-fetch"
 import {
 	text,
 	select,
@@ -13,18 +12,17 @@ import {
 	parseConfigsFile,
 	stringifyConfigsFile,
 	generateProxyUrl,
-	createProxyAgent,
 } from "../helpers.js"
-import { formUIReturnState, saveNewConfigs } from "./helpers.js"
-
-function getStoredProxies() {
-	const configs = parseConfigsFile()
-	const proxies = configs["proxies"] ? JSON.parse(configs["proxies"]) : []
-	return proxies
-}
+import {
+	formUIReturnState,
+	saveNewConfigs,
+	getStoredProxies,
+	isProxyReachableAndChangingIP,
+} from "./helpers.js"
+import { editProxyUI } from "./proxies/edit-proxy.js"
 
 async function testProxyUI() {
-	const testingProxySpinner = spinner()
+	let testingProxySpinner
 
 	try {
 		const proxies = getStoredProxies()
@@ -41,6 +39,7 @@ async function testProxyUI() {
 			"Operation cancelled, your proxies weren't tested."
 		)
 
+		testingProxySpinner = spinner()
 		testingProxySpinner.start("Testing the proxy")
 		const proxyTestResult = await isProxyReachableAndChangingIP(
 			proxies[chosenProxyIndex]
@@ -59,9 +58,10 @@ async function testProxyUI() {
 
 		note(testMessage, "Test Result")
 
-		return formUIReturnState(true)
+		return formUIReturnState(false)
 	} catch (error) {
-		testingProxySpinner.stop("Error happened while testing the proxy!")
+		if (testingProxySpinner)
+			testingProxySpinner.stop("Error happened while testing the proxy!")
 
 		error.cancelationMessage =
 			"Error happened while testing the proxy. Try again or contact the developer."
@@ -69,28 +69,8 @@ async function testProxyUI() {
 	}
 }
 
-async function isProxyReachableAndChangingIP(proxy) {
-	const identIPLink = "https://ident.me/ip"
-	const proxyUrl = generateProxyUrl(proxy)
-	// console.log(proxyUrl)
-	const proxyAgent = createProxyAgent(proxyUrl)
-	try {
-		const response = await Promise.all([
-			fetch(identIPLink),
-			fetch(identIPLink, { agent: proxyAgent }),
-		])
-		const data = await Promise.all([response[0].text(), response[1].text()])
-
-		if (data[0] === data[1]) return { reachable: true, changingIP: false }
-
-		return { reachable: true, changingIP: true }
-	} catch (error) {
-		return { reachable: false }
-	}
-}
-
 async function addNewProxyUI() {
-	const testingProxySpinner = spinner()
+	let testingProxySpinner
 
 	try {
 		const host = await text({
@@ -161,6 +141,7 @@ async function addNewProxyUI() {
 
 		const proxy = { protocol, host, port, username, password }
 
+		testingProxySpinner = spinner()
 		testingProxySpinner.start("Testing the proxy")
 		const proxyTestResult = await isProxyReachableAndChangingIP(proxy)
 		testingProxySpinner.stop("Finished testing the proxy")
@@ -175,7 +156,7 @@ async function addNewProxyUI() {
 		} else if (!proxyTestResult.changingIP) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy seems to be not changing the device IP, do you want to save it anyway?",
+					"The proxy isn't changing the device IP, do you want to save it anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
@@ -185,7 +166,8 @@ async function addNewProxyUI() {
 		return formUIReturnState(true)
 	} catch (error) {
 		// console.log(error)
-		testingProxySpinner.stop("Error happened while testing the proxy!")
+		if (testingProxySpinner)
+			testingProxySpinner.stop("Error happened while testing the proxy!")
 
 		error.cancelationMessage = "Error happened while adding the new proxy."
 		throw error
@@ -243,15 +225,11 @@ function deleteProxies(proxiesIndexes) {
 		const configs = parseConfigsFile()
 		const proxies = getStoredProxies()
 
-		// proxiesIndexes.sort((a, b) => a - b)
 		const filteredProxies = proxies.filter((_, index) => {
 			const isProxyToBeDeleted = proxiesIndexes.includes(index)
-			// proxiesIndexes.shift()
 			return !isProxyToBeDeleted
 		})
 
-		// console.log(filteredProxies)
-		// console.log(filteredProxies)
 		configs["proxies"] = JSON.stringify(filteredProxies)
 		const newConfigsString = stringifyConfigsFile(configs)
 		saveNewConfigs(newConfigsString)
@@ -309,13 +287,14 @@ export async function showProxiesUI() {
 		const configsUIs = {
 			test_proxy: testProxyUI,
 			add_proxy: addNewProxyUI,
-			edit_proxy: () => {},
+			edit_proxy: editProxyUI,
 			delete_proxies: deleteProxiesUI,
 		}
 
 		const savingState = await configsUIs[neededConfigs]()
 		return savingState
 	} catch (error) {
+		// console.log(error)
 		if (!error.cancelationMessage)
 			error.cancelationMessage =
 				"Error happened while updating your proxy configurations."
