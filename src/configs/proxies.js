@@ -52,7 +52,10 @@ async function testProxyUI() {
 		else {
 			testMessage += "reachable"
 
-			if (proxyTestResult.changingIP) testMessage += " and is changing you IP."
+			if (!proxyTestResult.isReturnValid)
+				testMessage += " but I can't check its anonymity."
+			else if (proxyTestResult.changingIP)
+				testMessage += " and is changing you IP."
 			else testMessage += " but isn't changing your IP."
 		}
 
@@ -150,6 +153,13 @@ async function addNewProxyUI() {
 			const shouldContinue = await confirm({
 				message:
 					"The proxy seems to be unreachable, do you want to save it anyway?",
+			})
+
+			if (!shouldContinue) return formUIReturnState(false)
+		} else if (!proxyTestResult.isReturnValid) {
+			const shouldContinue = await confirm({
+				message:
+					"The proxy is reachable but I can't check its anonymity, do you want to save the update anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
