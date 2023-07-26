@@ -1,5 +1,12 @@
 import fetch from "node-fetch"
-import { text, select, confirm, spinner, note } from "@clack/prompts"
+import {
+	text,
+	select,
+	confirm,
+	spinner,
+	note,
+	multiselect,
+} from "@clack/prompts"
 
 import {
 	addCancelPrompt,
@@ -31,7 +38,7 @@ async function testProxyUI() {
 		})
 		addCancelPrompt(
 			chosenProxyIndex,
-			"Operation cancelled, your proxies aren't tested."
+			"Operation cancelled, your proxies weren't tested."
 		)
 
 		testingProxySpinner.start("Testing the proxy")
@@ -199,6 +206,61 @@ async function addNewProxy(newProxy) {
 	}
 }
 
+async function deleteProxiesUI() {
+	try {
+		const proxies = getStoredProxies()
+
+		if (proxies.length === 0) {
+			note("You didn't add any proxies yet.", "No Proxies to Delete")
+			return formUIReturnState(false)
+		}
+
+		const chosenProxiesIndexes = await multiselect({
+			required: true,
+			message: "Which proxies do you want to delete?",
+			options: proxies.map((proxy, index) => ({
+				value: index,
+				label: generateProxyUrl(proxy),
+			})),
+		})
+		addCancelPrompt(
+			chosenProxiesIndexes,
+			"Operation cancelled, your proxies weren't deleted."
+		)
+
+		deleteProxies(chosenProxiesIndexes)
+		return formUIReturnState(true)
+	} catch (error) {
+		error.cancelationMessage =
+			error.cancelationMessage ||
+			"Error happened while deleting the proxies. Try again or contact the developer."
+		throw error
+	}
+}
+
+function deleteProxies(proxiesIndexes) {
+	try {
+		const configs = parseConfigsFile()
+		const proxies = getStoredProxies()
+
+		// proxiesIndexes.sort((a, b) => a - b)
+		const filteredProxies = proxies.filter((_, index) => {
+			const isProxyToBeDeleted = proxiesIndexes.includes(index)
+			// proxiesIndexes.shift()
+			return !isProxyToBeDeleted
+		})
+
+		// console.log(filteredProxies)
+		// console.log(filteredProxies)
+		configs["proxies"] = JSON.stringify(filteredProxies)
+		const newConfigsString = stringifyConfigsFile(configs)
+		saveNewConfigs(newConfigsString)
+	} catch (error) {
+		error.cancelationMessage = "Couldn't update the file."
+		throw error
+	}
+}
+
 function showStoredProxies() {
 	const proxies = getStoredProxies()
 	let proxiesMessage
@@ -234,8 +296,8 @@ export async function showProxiesUI() {
 					label: "Edit one of your proxies.",
 				},
 				{
-					value: "remove_proxies",
-					label: "Remove one or more of your proxies.",
+					value: "delete_proxies",
+					label: "Delete one or more of your proxies.",
 				},
 			],
 		})
@@ -248,7 +310,7 @@ export async function showProxiesUI() {
 			test_proxy: testProxyUI,
 			add_proxy: addNewProxyUI,
 			edit_proxy: () => {},
-			remove_proxies: () => {},
+			delete_proxies: deleteProxiesUI,
 		}
 
 		const savingState = await configsUIs[neededConfigs]()
