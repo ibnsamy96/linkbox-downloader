@@ -27,11 +27,17 @@ export function getStoredProxies() {
 	return proxies
 }
 
+// The function tests proxies by sending two requests to "https://ident.me/ip" which should return only the device IP, and based on the returns of the two requests it detects if the proxy is reachable and is changing IP
 export async function isProxyReachableAndChangingIP(proxy) {
 	const identIPLink = "https://ident.me/ip"
 	const proxyUrl = generateProxyUrl(proxy)
-	// console.log(proxyUrl)
 	const proxyAgent = createProxyAgent(proxyUrl)
+	const testResult = {
+		reachable: false,
+		isReturnValid: false,
+		changingIP: false,
+	}
+
 	try {
 		const response = await Promise.all([
 			fetch(identIPLink),
@@ -39,17 +45,20 @@ export async function isProxyReachableAndChangingIP(proxy) {
 		])
 		const data = await Promise.all([response[0].text(), response[1].text()])
 
-		const isReturnValid = /[a-z]/i.test(data[0]) || /[a-z]/i.test(data[1])
-		if (!isReturnValid) return { reachable: true, isReturnValid }
+		// If no error happened in fetching, then proxy is reachable
+		testResult.reachable = true
 
-		if (data[0] === data[1])
-			return { reachable: true, isReturnValid, changingIP: false }
+		// if the requests returned letters not just the device ip, then the proxy request is valid
+		const isReturnValid = !(/[a-z]/i.test(data[0]) || /[a-z]/i.test(data[1]))
+		if (!isReturnValid) return testResult
+		else testResult.isReturnValid = true
 
-		if (data[0] === data[1])
-			return { reachable: true, isReturnValid, changingIP: false }
+		// if the IPs of the two requests are the same, then the proxy is not changing IPs
+		if (data[0] === data[1]) return testResult
+		else testResult.changingIP = true
 
-		return { reachable: true, changingIP: true }
+		return testResult
 	} catch (error) {
-		return { reachable: false }
+		return testResult
 	}
 }

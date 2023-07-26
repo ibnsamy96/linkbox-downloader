@@ -151,7 +151,7 @@ export async function editProxyUI() {
 		} else if (!proxyTestResult.isReturnValid) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy is reachable but I can't check its anonymity, do you want to save the update anyway?",
+					"The proxy is reachable but I can't check its anonymity, you might need to add auth info. Do you want to save the update anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)

@@ -53,7 +53,8 @@ async function testProxyUI() {
 			testMessage += "reachable"
 
 			if (!proxyTestResult.isReturnValid)
-				testMessage += " but I can't check its anonymity."
+				testMessage +=
+					" but I can't check its anonymity, you might need to add auth info."
 			else if (proxyTestResult.changingIP)
 				testMessage += " and is changing you IP."
 			else testMessage += " but isn't changing your IP."
@@ -165,7 +166,7 @@ async function addNewProxyUI() {
 		} else if (!proxyTestResult.isReturnValid) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy is reachable but I can't check its anonymity, do you want to save the update anyway?",
+					"The proxy is reachable but I can't check its anonymity, you might need to add auth info. Do you want to save the update anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
