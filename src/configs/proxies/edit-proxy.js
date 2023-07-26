@@ -144,21 +144,21 @@ export async function editProxyUI() {
 		if (!proxyTestResult.reachable) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy seems to be unreachable, do you want to save the update anyway?",
+					"The proxy seems to be unreachable, do you want to save your changes anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
 		} else if (!proxyTestResult.isReturnValid) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy is reachable but I can't check its anonymity, you might need to add auth info. Do you want to save the update anyway?",
+					"The proxy is reachable but I can't check its anonymity, you might need to add auth info. Do you want to save your changes anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
 		} else if (!proxyTestResult.changingIP) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy isn't changing the device IP, do you want to save the update anyway?",
+					"The proxy isn't changing the device IP, do you want to save your changes anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
