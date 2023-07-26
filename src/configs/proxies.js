@@ -128,6 +128,9 @@ async function addNewProxyUI() {
 		if (hasAuth) {
 			username = await text({
 				message: "What is the username?",
+				validate: text => {
+					if (text.length === 0) return "Username can't be empty"
+				},
 			})
 			addCancelPrompt(
 				port,
@@ -135,6 +138,9 @@ async function addNewProxyUI() {
 			)
 			password = await text({
 				message: "What is the password?",
+				validate: text => {
+					if (text.length === 0) return "Password can't be empty"
+				},
 			})
 			addCancelPrompt(
 				port,

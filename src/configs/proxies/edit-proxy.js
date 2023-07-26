@@ -111,6 +111,9 @@ export async function editProxyUI() {
 			username = await text({
 				message: "What is the username?",
 				initialValue: oldProxy.username || "",
+				validate: text => {
+					if (text.length === 0) return "Username can't be empty"
+				},
 			})
 			addCancelPrompt(
 				port,
@@ -119,6 +122,9 @@ export async function editProxyUI() {
 			password = await text({
 				message: "What is the password?",
 				initialValue: oldProxy.password || "",
+				validate: text => {
+					if (text.length === 0) return "Password can't be empty"
+				},
 			})
 			addCancelPrompt(
 				port,
