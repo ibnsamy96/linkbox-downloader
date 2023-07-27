@@ -4,7 +4,8 @@
 
 # LinkBox-Downloader
 
-Unofficial cli-utility for downloading files and folders from linkbox.to
+Unofficial cli-utility for downloading files and folders from linkbox.to  
+<i>|-- It's better to use proxies for you IP protection, check the utility configurations. --|</i>
 
 </div>
 
