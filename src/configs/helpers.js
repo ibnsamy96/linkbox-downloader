@@ -34,6 +34,7 @@ export async function isProxyReachableAndChangingIP(proxy) {
 	const proxyAgent = createProxyAgent(proxyUrl)
 	const testResult = {
 		reachable: false,
+		needAuth: false,
 		isReturnValid: false,
 		changingIP: false,
 	}
@@ -49,6 +50,12 @@ export async function isProxyReachableAndChangingIP(proxy) {
 
 		// If no error happened in fetching, then proxy is reachable
 		testResult.reachable = true
+
+		const isProxyNeedAuth = response[1].status == 407 // 407 means proxy needs authentication
+		if (isProxyNeedAuth) {
+			testResult.needAuth = isProxyNeedAuth
+			return testResult
+		}
 
 		// if the requests returned letters not just the device ip, then the proxy request is valid
 		const isReturnValid = !(/[a-z]/i.test(data[0]) || /[a-z]/i.test(data[1]))
