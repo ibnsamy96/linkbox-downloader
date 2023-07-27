@@ -45,6 +45,8 @@ export async function isProxyReachableAndChangingIP(proxy) {
 		])
 		const data = await Promise.all([response[0].text(), response[1].text()])
 
+		// console.log(data)
+
 		// If no error happened in fetching, then proxy is reachable
 		testResult.reachable = true
 
@@ -59,6 +61,7 @@ export async function isProxyReachableAndChangingIP(proxy) {
 
 		return testResult
 	} catch (error) {
+		console.log(proxyUrl + error.message)
 		return testResult
 	}
 }
