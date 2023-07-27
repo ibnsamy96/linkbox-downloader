@@ -1,6 +1,6 @@
 import path from "path"
 import fs from "fs"
-import { exportedForTesting } from "../src/downloader.js"
+import { exportedForTesting } from "../../src/downloader.js"
 const { clearLastLine, generateFilePath, isEpisodeDownloaded } =
 	exportedForTesting
 

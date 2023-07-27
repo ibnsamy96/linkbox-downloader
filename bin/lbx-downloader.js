@@ -3,21 +3,11 @@
 import { platform } from "os"
 import { spawn } from "child_process"
 import startApp from "../src/index.js"
-import updateConfigs from "../src/configs.js"
+import updateConfigs from "../src/configs/configs-index.js"
 import paths from "../src/paths.js"
-// import packageJson from "../package.json" assert { type: "json" }
-
-// const packageJson = await import("../package.json", {
-// 	assert: { type: "json" },
-// })
 
 const args = process.argv.slice(2)
 const option = args[0]
-
-// const scriptIndex = args.findIndex(x =>
-// 	["-o", "--open", "-h", "--help", "-d", "--dev"].includes(x)
-// )
-// const script = scriptIndex === -1 ? args[0] : args[scriptIndex]
 
 switch (option) {
 	case undefined:
