@@ -24,14 +24,14 @@ const createProxiesAgents = function* () {
 	const configs = parseConfigsFile()
 	const proxies = JSON.parse(configs["proxies"] || null)
 	if (!proxies) {
-		return undefined
+		return { proxyAgent: null, proxyIndex: null }
 	} else {
 		let i = 0
 		while (true) {
 			if (i >= proxies.length) i = 0
 			const proxy = proxies[i]
 			const proxyUrl = generateProxyUrl(proxy)
-			yield createProxyAgent(proxyUrl)
+			yield { proxyAgent: createProxyAgent(proxyUrl), proxyIndex: i }
 			i++
 		}
 	}
@@ -41,14 +41,24 @@ const roundedProxiesCreator = createProxiesAgents()
 
 const getData = async function (url) {
 	try {
-		const proxyAgent = roundedProxiesCreator.next().value
-		const req = await fetch(url, { agent: proxyAgent })
-		const data = await req.json()
+		const { proxyAgent, proxyIndex } = roundedProxiesCreator.next().value
+
+		const res = await fetch(url, { agent: proxyAgent })
+
+		if (res.status == 407 && proxyAgent) {
+			const error = new Error("Proxy Authentication Required")
+			error.cancelationMessage = `Couldn't complete the fetch process, the proxy number '${
+				proxyIndex + 1
+			}' in your proxies list requires auth. Go to configs and check it.`
+			throw error
+		}
+
+		const data = await res.json()
 		return data
 	} catch (error) {
-		// console.log(error)
-		error.cancelationMessage =
-			"Couldn't complete the fetch process, make sure that you're connected and LinkBox is available."
+		if (!error.cancelationMessage)
+			error.cancelationMessage =
+				"Couldn't complete the fetch process, make sure that you're connected and LinkBox is available."
 		throw error
 	}
 }
