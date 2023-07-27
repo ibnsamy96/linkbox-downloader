@@ -148,10 +148,17 @@ export async function editProxyUI() {
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
+		} else if (proxyTestResult.needAuth) {
+			const shouldContinue = await confirm({
+				message:
+					"The proxy is reachable but it needs auth info. Do you want to save your changes anyway?",
+			})
+
+			if (!shouldContinue) return formUIReturnState(false)
 		} else if (!proxyTestResult.isReturnValid) {
 			const shouldContinue = await confirm({
 				message:
-					"The proxy is reachable but I can't check its anonymity, you might need to add auth info. Do you want to save your changes anyway?",
+					"The proxy is reachable but I can't check its anonymity. Do you want to save your changes anyway?",
 			})
 
 			if (!shouldContinue) return formUIReturnState(false)
