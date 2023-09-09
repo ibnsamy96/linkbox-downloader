@@ -17,7 +17,7 @@ function replaceImportFromSrcToDist() {
 }
 
 function copySrcFilesToProd() {
-	return src("./src/*.js").pipe(dest("./dest/prod"))
+	return src("./src/**/*.js").pipe(dest("./dest/prod"))
 }
 
 function copyAdditionalFiles() {
