@@ -22,7 +22,7 @@ async function chooseProxy() {
 	}
 
 	const chosenProxyIndex = await select({
-		message: "Which proxies do you want to delete?",
+		message: "Which proxies do you want to edit?",
 		options: proxies.map((proxy, index) => ({
 			value: index,
 			label: generateProxyUrl(proxy),
@@ -55,8 +55,8 @@ export async function editProxyUI() {
 	try {
 		const { index: oldProxyIndex, proxy: oldProxy } = await chooseProxy()
 
-		console.log(oldProxy)
-		console.log(oldProxy)
+		// console.log(oldProxy)
+		// console.log(oldProxy)
 
 		const host = await text({
 			message: "What is the new proxy host?",
